@@ -22,7 +22,6 @@
         .contenedor {
             margin-bottom: 20px;
         }
-        /* CÁMARA ADAPTABLE A MÓVILES */
         #cámara {
             width: 100%;
             max-width: 640px;
@@ -31,7 +30,7 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.2);
             filter: sepia(0.6) saturate(1.8) hue-rotate(-15deg) contrast(1.1);
         }
-        #btnCapturar, .btn-cargar, .btn-enviar {
+        #btnCapturar, .btn-cargar, #btnEnviar {
             width: 100%;
             max-width: 300px;
             padding: 14px 20px;
@@ -45,10 +44,10 @@
             margin: 8px auto;
             display: block;
         }
-        #btnCapturar:hover, .btn-cargar:hover, .btn-enviar:hover {
+        #btnCapturar:hover, .btn-cargar:hover, #btnEnviar:hover {
             background-color: #b45309;
         }
-        #btnCapturar:disabled, .btn-enviar:disabled {
+        #btnCapturar:disabled, #btnEnviar:disabled {
             background-color: #9ca3af;
             cursor: not-allowed;
         }
@@ -81,10 +80,9 @@
             font-size: 12px;
             color: #555;
         }
-        /* IFRAME RESPONSIVE */
         .video-responsive {
             position: relative;
-            padding-bottom: 56.25%; /* 16:9 */
+            padding-bottom: 56.25%;
             height: 0;
             overflow: hidden;
             max-width: 560px;
@@ -105,7 +103,6 @@
             margin: 30px auto;
             width: 90%;
         }
-        /* ESTILOS DE LA CAJA DE COMENTARIOS ADAPTADOS A MÓVILES */
         .contenedor-comentarios {
             width: 100%;
             max-width: 500px;
@@ -178,7 +175,7 @@
     <div class="contenedor-comentarios">
         <h2>💬 Caja de Comentarios</h2>
         <textarea id="txtComentario" placeholder="Escribe tu mensaje o comentario..."></textarea>
-        <button id="btnEnviarComentario" class="btn-enviar">Publicar Comentario</button>
+        <button id="btnEnviar">Publicar Comentario</button>
 
         <div id="listaComentarios" class="lista-comentarios">
             <p style="text-align:center; color:#6b7280;">Cargando comentarios...</p>
@@ -219,21 +216,18 @@
         const contenedorCapturas = document.getElementById('capturas');
         const galeriaSheety = document.getElementById('galeriaSheety');
         const txtComentario = document.getElementById('txtComentario');
-        const btnEnviarComentario = document.getElementById('btnEnviarComentario');
+        const btnEnviar = document.getElementById('btnEnviar');
         const listaComentarios = document.getElementById('listaComentarios');
 
-        // Inicializar Cámara
         async function iniciarCamara() {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false });
                 videoElement.srcObject = stream;
             } catch (error) {
                 console.error("Error al acceder a la cámara:", error);
-                alert("No se pudo acceder a la cámara.");
             }
         }
 
-        // Guardar Foto en Sheety
         async function enviarFotoASheety(base64Image) {
             const bodyPayload = {
                 hoja1: {
@@ -253,11 +247,9 @@
                 throw new Error(`Error HTTP ${response.status}: ${errorTexto}`);
             }
 
-            console.log("¡Foto guardada en Sheety!");
             await cargarTodoDeSheety();
         }
 
-        // Guardar Comentario en Sheety
         async function enviarComentarioASheety(texto) {
             const bodyPayload = {
                 hoja1: {
@@ -277,11 +269,9 @@
                 throw new Error(`Error HTTP ${response.status}: ${errorTexto}`);
             }
 
-            console.log("¡Comentario guardado!");
             await cargarTodoDeSheety();
         }
 
-        // Cargar Fotos y Comentarios
         async function cargarTodoDeSheety() {
             if (galeriaSheety) galeriaSheety.innerHTML = "<p>Cargando fotos...</p>";
             if (listaComentarios) listaComentarios.innerHTML = "<p style='text-align:center;'>Cargando comentarios...</p>";
@@ -304,8 +294,9 @@
                 let tieneFotos = false;
                 let tieneComentarios = false;
 
-                filas.reverse().forEach((fila, index) => {
-                    // BUSCAR FOTOS
+                // Mostramos de más reciente a más antiguo
+                [...filas].reverse().forEach((fila, index) => {
+                    // 1. BUSCAR FOTOS
                     let base64Texto = null;
                     for (const clave in fila) {
                         const valor = String(fila[clave]);
@@ -332,9 +323,19 @@
                         galeriaSheety.appendChild(tarjeta);
                     }
 
-                    // BUSCAR COMENTARIOS
-                    const textoComentario = fila.comentario || fila.Comentario;
-                    if (textoComentario && String(textoComentario).trim() !== "") {
+                    // 2. BUSCAR COMENTARIOS (Revisa insensible a mayúsculas/minúsculas)
+                    let textoComentario = null;
+                    for (const clave in fila) {
+                        if (clave.toLowerCase() === 'comentario') {
+                            const val = String(fila[clave]).trim();
+                            if (val !== "" && val !== "undefined" && val !== "null") {
+                                textoComentario = val;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (textoComentario) {
                         tieneComentarios = true;
                         const tarjetaC = document.createElement('div');
                         tarjetaC.className = 'tarjeta-comentario';
@@ -362,10 +363,9 @@
             }
         }
 
-        // EVENTO TOMAR FOTO
+        // EVENTO FOTO
         btnCapturar.addEventListener('click', async () => {
             try {
-                // IMPORTANTE: Mantenemos 240px de ancho para no saturar la celda de Google Sheets y evitar el Error 500
                 const anchoObjetivo = 1000;
                 const proporcion = anchoObjetivo / videoElement.videoWidth;
 
@@ -396,8 +396,8 @@
             }
         });
 
-        // EVENTO ENVIAR COMENTARIO
-        btnEnviarComentario.addEventListener('click', async () => {
+        // EVENTO COMENTARIO (Conectado directamente a #btnEnviar)
+        btnEnviar.addEventListener('click', async () => {
             const texto = txtComentario.value.trim();
             if (!texto) {
                 alert("Por favor escribe un mensaje antes de publicar.");
@@ -405,8 +405,8 @@
             }
 
             try {
-                btnEnviarComentario.disabled = true;
-                btnEnviarComentario.textContent = "Publicando...";
+                btnEnviar.disabled = true;
+                btnEnviar.textContent = "Publicando...";
 
                 await enviarComentarioASheety(texto);
 
@@ -415,8 +415,8 @@
                 console.error("Fallo al publicar comentario:", err);
                 alert("Ocurrió un error al enviar el comentario.");
             } finally {
-                btnEnviarComentario.disabled = false;
-                btnEnviarComentario.textContent = "Publicar Comentario";
+                btnEnviar.disabled = false;
+                btnEnviar.textContent = "Publicar Comentario";
             }
         });
 
