@@ -1,0 +1,451 @@
+
+
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Cámara Web con Captura</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 20px;
+            background-color: #f4f1ea;
+        }
+        .contenedor {
+            margin-bottom: 20px;
+        }
+        #cámara {
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            filter: sepia(0.6) saturate(1.8) hue-rotate(-15deg) contrast(1.1);
+        }
+        #btnCapturar, .btn-cargar {
+            padding: 12px 24px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #d97706;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            margin: 5px;
+        }
+        #btnCapturar:hover, .btn-cargar:hover {
+            background-color: #b45309;
+        }
+        #btnCapturar:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+        }
+        .galeria {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+            padding: 10px;
+        }
+        .galeria img {
+            border: 2px solid #d97706;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            max-width: 320px;
+        }
+        .tarjeta-foto {
+            background-color: #ffffff;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .tarjeta-foto p {
+            margin: 5px 0 0 0;
+            font-size: 12px;
+            color: #555;
+        }
+        #rick {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover;
+            z-index: -1;
+        }
+        hr {
+            border: 0;
+            height: 1px;
+            background: #d97706;
+            margin: 30px auto;
+            width: 80%;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Retratos del Mejor Grupo de Red del Mundo Mundial</h1>
+
+    <!--video id="rick" src="RickRoll.mp4" autoplay controls playsinline muted loop></video-->
+
+    <iframe  width="560" height="315" src="https://www.youtube.com/embed/dQw4w9WgXcQ?si=NVcJEwdnJwLQDHYY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe> 
+
+    <div class="contenedor">
+        <video id="cámara" autoplay playsinline width="640" height="480"></video>
+        <br><br>
+        <button id="btnCapturar">📸 Tomar Foto</button>
+    </div>
+
+    <canvas id="canvas" style="display:none;"></canvas>
+
+    <h3>Foto Reciente (Local):</h3>
+    <div id="capturas" class="galeria"></div>
+
+    <hr>
+
+    <h2>Galería en la Nube (Sheety)</h2>
+    <button class="btn-cargar" onclick="cargarFotosDeSheety()">🔄 Actualizar Fotos de Sheety</button>
+    <div id="galeriaSheety" class="galeria">
+        <p>Cargando fotos de la base de datos...</p>
+    </div>
+
+    <audio src="perro.mp3" autoplay controls loop></audio>
+
+    <script>
+        const SHEETY_API_URL = 'https://api.sheety.co/e747b19c10a06a356a61015e63a8ed11/fotossRed/hoja1';
+
+        const videoElement = document.getElementById('cámara');
+        const btnCapturar = document.getElementById('btnCapturar');
+        const canvas = document.getElementById('canvas');
+        const contenedorCapturas = document.getElementById('capturas');
+        const galeriaSheety = document.getElementById('galeriaSheety');
+
+        async function iniciarCamara() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                videoElement.srcObject = stream;
+            } catch (error) {
+                console.error("Error al acceder a la cámara:", error);
+                alert("No se pudo acceder a la cámara.");
+            }
+        }
+
+        async function enviarASheety(base64Image) {
+            const bodyPayload = {
+                hoja1: {
+                    fecha: new Date().toLocaleString(),
+                    imagenbase64: base64Image 
+                }
+            };
+
+            const response = await fetch(SHEETY_API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(bodyPayload)
+            });
+
+            if (!response.ok) {
+                const errorTexto = await response.text();
+                throw new Error(`Error HTTP ${response.status}: ${errorTexto}`);
+            }
+
+            console.log("¡Foto guardada con éxito en Sheety!");
+            await cargarFotosDeSheety();
+        }
+
+        async function cargarFotosDeSheety() {
+            if (!galeriaSheety) return;
+            galeriaSheety.innerHTML = "<p>Cargando fotos desde Sheety...</p>";
+
+            try {
+                const response = await fetch(SHEETY_API_URL, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error HTTP: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log("Respuesta raw de Sheety:", data);
+
+                const primeraClave = Object.keys(data)[0];
+                const filas = data[primeraClave] || [];
+
+                galeriaSheety.innerHTML = "";
+
+                if (!Array.isArray(filas) || filas.length === 0) {
+                    galeriaSheety.innerHTML = "<p>No hay fotos en Sheety aún.</p>";
+                    return;
+                }
+
+                filas.reverse().forEach((fila, index) => {
+                    let base64Texto = null;
+
+                    for (const clave in fila) {
+                        const valor = String(fila[clave]);
+                        if (valor.startsWith('data:image')) {
+                            base64Texto = valor;
+                            break;
+                        }
+                    }
+
+                    if (base64Texto) {
+                        const tarjeta = document.createElement('div');
+                        tarjeta.className = 'tarjeta-foto';
+                        tarjeta.style.margin = "10px";
+                        tarjeta.style.display = "inline-block";
+
+                        const img = document.createElement('img');
+                        img.src = base64Texto;
+                        img.alt = `Foto ${index + 1}`;
+                        img.style.maxWidth = "300px";
+                        img.style.borderRadius = "8px";
+                        img.style.border = "2px solid #d97706";
+
+                        const fechaTexto = document.createElement('p');
+                        fechaTexto.textContent = fila.fecha || `Foto #${filas.length - index}`;
+                        fechaTexto.style.fontSize = "12px";
+                        fechaTexto.style.color = "#333";
+
+                        tarjeta.appendChild(img);
+                        tarjeta.appendChild(fechaTexto);
+                        galeriaSheety.appendChild(tarjeta);
+                    }
+                });
+
+            } catch (error) {
+                console.error("Error al cargar fotos:", error);
+                galeriaSheety.innerHTML = "<p style='color:red;'>Error al cargar las fotos. Revisa la consola (F12).</p>";
+            }
+        }
+
+        // --- AHORA SÍ: EVENTO REINTEGRADO PARA EL BOTÓN ---
+        btnCapturar.addEventListener('click', async () => {
+            try {
+                // Reducimos resolución para garantizar que entre en la celda de Google Sheets
+                const anchoObjetivo = 1000;
+                const proporcion = anchoObjetivo / videoElement.videoWidth;
+
+                canvas.width = anchoObjetivo;
+                canvas.height = videoElement.videoHeight * proporcion;
+
+                const context = canvas.getContext('2d');
+                context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+
+                // Compresión JPEG liviana
+                const imageDataURL = canvas.toDataURL('image/jpeg', 0.2);
+
+                // Vista previa local inmediata
+                contenedorCapturas.innerHTML = "";
+                const img = document.createElement('img');
+                img.src = imageDataURL;
+                contenedorCapturas.appendChild(img);
+
+                btnCapturar.disabled = true;
+                btnCapturar.textContent = "Guardando...";
+
+                await enviarASheety(imageDataURL);
+
+            } catch (err) {
+                console.error("Fallo durante la captura:", err);
+                alert("Ocurrió un error al procesar o enviar la foto a Sheety.");
+            } finally {
+                // Se desbloquea siempre
+                btnCapturar.disabled = false;
+                btnCapturar.textContent = "📸 Tomar Foto";
+            }
+        });
+
+        iniciarCamara();
+        cargarFotosDeSheety();
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+<!--html>
+
+
+<head>
+
+
+	<meta charset="UTF-8">
+    <title>Cámara Web con Captura</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .contenedor {
+            margin-bottom: 20px;
+        }
+        #capturas {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        #capturas img {
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+
+        <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 20px;
+            background-color: #f4f1ea;
+        }
+        .contenedor {
+            margin-bottom: 20px;
+        }
+        /* APLICAMOS EL FILTRO AL VIDEO */
+        #cámara {
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            filter: sepia(0.6) saturate(1.8) hue-rotate(-15deg) contrast(1.1);
+        }
+        #btnCapturar {
+            padding: 12px 24px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #d97706;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        #btnCapturar:hover {
+            background-color: #b45309;
+        }
+        #capturas {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        #capturas img {
+            border: 2px solid #d97706;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+
+
+    	#rick {
+    	position: fixed;
+    	top: 0;
+    	left: 0;
+    	width: 100vw;
+    	height: 100vh;
+    	object-fit: cover; /* Evita que el video se deforme */
+    	z-index: -1;     /* Lo manda detrás de todo el contenido */
+}
+        }
+
+
+    </style>
+
+
+
+</style>
+
+</head>
+
+<body>
+
+
+	<h1> 3 de Noviembre del 2026</h1>
+
+	<video id="rick" src="RickRoll.mp4" autoplay controls playsinline> 
+	</video>
+
+	<div class="contenedor">
+        <Tu etiqueta video con el id "cámara">
+        <video id="cámara" autoplay playsinline width="640" height="480"></video>
+        <br><br>
+        <Botón para tomar la captura ->
+        <button id="btnCapturar" style="padding: 10px 20px; font-size: 16px; cursor: pointer;">📸 Tomar Foto</button>
+    </div>
+
+    <!-- Canvas oculto para procesar la imagen ->
+    <canvas id="canvas" style="display:none;"></canvas>
+
+    <!-- Contenedor donde se mostrarán las fotos capturadas ->
+    <h3>Tus Capturas:</h3>
+    <div id="capturas"></div>
+
+    <script>
+        const videoElement = document.getElementById('cámara');
+        const btnCapturar = document.getElementById('btnCapturar');
+        const canvas = document.getElementById('canvas');
+        const contenedorCapturas = document.getElementById('capturas');
+
+        // Función para encender la cámara
+        async function iniciarCamara() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                videoElement.srcObject = stream;
+            } catch (error) {
+                console.error("Hubo un error al acceder a la cámara: ", error);
+                alert("No se pudo acceder a la cámara. Revisa los permisos de tu navegador.");
+            }
+        }
+
+        // Evento al hacer clic en el botón de capturar
+        btnCapturar.addEventListener('click', () => {
+            // Ajustamos el tamaño del canvas al tamaño actual del video
+            canvas.width = videoElement.videoWidth;
+            canvas.height = videoElement.videoHeight;
+
+            // Dibujamos elfotograma actual del video en el canvas
+            const context = canvas.getContext('2d');
+            context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+
+            // Convertimos la imagen del canvas a formato PNG (base64)
+            const imageDataURL = canvas.toDataURL('image/png');
+
+            // Creamos una etiqueta <img> para mostrar la foto
+            const img = document.createElement('img');
+            img.src = imageDataURL;
+            img.width = 320; // Tamaño de visualización en la página
+
+            // Agregamos la nueva foto al inicio del contenedor
+            contenedorCapturas.prepend(img);
+        });
+
+        // Ejecutamos la función al cargar la página
+        iniciarCamara();
+    </script><
+
+
+
+
+
+
+	<audio src="perro.mp3" autoplay controls loop>
+	
+	</audio>
+
+</body>
+
+</html-->
+
+
+
+
+
