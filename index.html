@@ -81,15 +81,241 @@
             width: 80%;
         }
     </style>
+
+<style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f1ea;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .contenedor-comentarios {
+            width: 100%;
+            max-width: 500px;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #d97706;
+            text-align: center;
+        }
+
+        textarea {
+            width: 100%;
+            height: 90px;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 14px;
+            resize: vertical;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #d97706;
+            box-shadow: 0 0 0 2px rgba(217, 119, 6, 0.2);
+        }
+
+        .btn-enviar {
+            width: 100%;
+            padding: 12px;
+            background-color: #d97706;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 15px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-enviar:hover {
+            background-color: #b45309;
+        }
+
+        .btn-enviar:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .lista-comentarios {
+            margin-top: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .tarjeta-comentario {
+            background-color: #fffbeb;
+            border-left: 4px solid #d97706;
+            padding: 12px 15px;
+            border-radius: 0 6px 6px 0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .tarjeta-comentario p {
+            margin: 0;
+            color: #1f2937;
+            font-size: 14px;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+
+        .tarjeta-comentario .fecha {
+            font-size: 11px;
+            color: #6b7280;
+            margin-top: 6px;
+            text-align: right;
+        }
+    </style>
+
+
+
 </head>
 <body>
 
     <h1>Retratos del Mejor Grupo de Red del Mundo Mundial</h1>
 
+
     <!--video id="rick" src="RickRoll.mp4" autoplay controls playsinline muted loop></video-->
 
     <iframe  width="560" height="315" src="https://www.youtube.com/embed/dQw4w9WgXcQ?si=NVcJEwdnJwLQDHYY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe> 
 
+
+<div class="contenedor-comentarios">
+        <h2>💬 Caja de Comentarios</h2>
+        
+        <textarea id="txtComentario" placeholder="Escribe tu mensaje o comentario..."></textarea>
+        <button id="btnEnviar" class="btn-enviar">Publicar Comentario</button>
+
+        <div id="listaComentarios" class="lista-comentarios">
+            <p style="text-align:center; color:#6b7280;">Cargando comentarios...</p>
+        </div>
+    </div>
+
+    <script>
+        const SHEETY_API_URL = 'https://api.sheety.co/e747b19c10a06a356a61015e63a8ed11/fotossRed/hoja1';
+
+        const txtComentario = document.getElementById('txtComentario');
+        const btnEnviar = document.getElementById('btnEnviar');
+        const listaComentarios = document.getElementById('listaComentarios');
+
+        // FUNCIÓN 1: Guardar nuevo comentario en Sheety
+        async function guardarComentario(texto) {
+            const bodyPayload = {
+                hoja1: {
+                    fecha: new Date().toLocaleString(),
+                    comentario: texto
+                }
+            };
+
+            const response = await fetch(SHEETY_API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(bodyPayload)
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Error HTTP ${response.status}: ${errorText}`);
+            }
+
+            console.log("Comentario guardado en Sheety con éxito");
+            await obtenerComentarios();
+        }
+
+        // FUNCIÓN 2: Obtener y mostrar la lista de comentarios desde Sheety
+        async function obtenerComentarios() {
+            try {
+                const response = await fetch(SHEETY_API_URL, {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
+
+                const data = await response.json();
+                const primeraClave = Object.keys(data)[0];
+                const filas = data[primeraClave] || [];
+
+                listaComentarios.innerHTML = "";
+
+                let comentariosEncontrados = 0;
+
+                // Mostramos de más reciente a más antiguo
+                filas.reverse().forEach(fila => {
+                    const textoComentario = fila.comentario || fila.Comentario;
+
+                    if (textoComentario && String(textoComentario).trim() !== "") {
+                        comentariosEncontrados++;
+
+                        const tarjeta = document.createElement('div');
+                        tarjeta.className = 'tarjeta-comentario';
+
+                        const pTexto = document.createElement('p');
+                        pTexto.textContent = textoComentario;
+
+                        const pFecha = document.createElement('div');
+                        pFecha.className = 'fecha';
+                        pFecha.textContent = fila.fecha || 'Fecha no registrada';
+
+                        tarjeta.appendChild(pTexto);
+                        tarjeta.appendChild(pFecha);
+                        listaComentarios.appendChild(tarjeta);
+                    }
+                });
+
+                if (comentariosEncontrados === 0) {
+                    listaComentarios.innerHTML = "<p style='text-align:center; color:#6b7280;'>No hay comentarios aún. ¡Sé el primero!</p>";
+                }
+
+            } catch (error) {
+                console.error("Error al obtener comentarios:", error);
+                listaComentarios.innerHTML = "<p style='color:red; text-align:center;'>Error al cargar los comentarios.</p>";
+            }
+        }
+
+        // EVENTO: Clic en el botón Publicar
+        btnEnviar.addEventListener('click', async () => {
+            const texto = txtComentario.value.trim();
+            if (!texto) {
+                alert("Por favor escribe algo antes de enviar.");
+                return;
+            }
+
+            try {
+                btnEnviar.disabled = true;
+                btnEnviar.textContent = "Guardando...";
+
+                await guardarComentario(texto);
+
+                txtComentario.value = ""; // Limpiar el input
+            } catch (err) {
+                console.error("Error al publicar:", err);
+                alert("Ocurrió un error al enviar el comentario.");
+            } finally {
+                btnEnviar.disabled = false;
+                btnEnviar.textContent = "Publicar Comentario";
+            }
+        });
+
+        // Cargar comentarios existentes al abrir la página
+        obtenerComentarios();
+    </script>
+
+
+
+
+	
     <div class="contenedor">
         <video id="cámara" autoplay playsinline width="640" height="480"></video>
         <br><br>
