@@ -1,41 +1,54 @@
-
-
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Cámara Magica de Artes</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cámara Mágica de Artes</title>
     <style>
+        * {
+            box-sizing: border-box;
+        }
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            margin-top: 20px;
+            margin: 0;
+            padding: 15px;
             background-color: #f4f1ea;
+        }
+        h1, h2, h3 {
+            color: #1f2937;
+            word-wrap: break-word;
         }
         .contenedor {
             margin-bottom: 20px;
         }
+        /* CÁMARA ADAPTABLE A MÓVILES */
         #cámara {
+            width: 100%;
+            max-width: 640px;
+            height: auto;
             border-radius: 8px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.2);
             filter: sepia(0.6) saturate(1.8) hue-rotate(-15deg) contrast(1.1);
         }
-        #btnCapturar, .btn-cargar {
-            padding: 12px 24px;
+        #btnCapturar, .btn-cargar, .btn-enviar {
+            width: 100%;
+            max-width: 300px;
+            padding: 14px 20px;
             font-size: 16px;
             cursor: pointer;
             background-color: #d97706;
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 6px;
             font-weight: bold;
-            margin: 5px;
+            margin: 8px auto;
+            display: block;
         }
-        #btnCapturar:hover, .btn-cargar:hover {
+        #btnCapturar:hover, .btn-cargar:hover, .btn-enviar:hover {
             background-color: #b45309;
         }
-        #btnCapturar:disabled {
+        #btnCapturar:disabled, .btn-enviar:disabled {
             background-color: #9ca3af;
             cursor: not-allowed;
         }
@@ -51,55 +64,63 @@
             border: 2px solid #d97706;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            max-width: 320px;
+            width: 100%;
+            max-width: 300px;
+            height: auto;
         }
         .tarjeta-foto {
             background-color: #ffffff;
             padding: 10px;
             border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 320px;
         }
         .tarjeta-foto p {
             margin: 5px 0 0 0;
             font-size: 12px;
             color: #555;
         }
-        #rick {
-            position: fixed;
+        /* IFRAME RESPONSIVE */
+        .video-responsive {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 */
+            height: 0;
+            overflow: hidden;
+            max-width: 560px;
+            margin: 0 auto 20px auto;
+            border-radius: 8px;
+        }
+        .video-responsive iframe {
+            position: absolute;
             top: 0;
             left: 0;
-            width: 100vw;
-            height: 100vh;
-            object-fit: cover;
-            z-index: -1;
+            width: 100%;
+            height: 100%;
         }
         hr {
             border: 0;
             height: 1px;
             background: #d97706;
             margin: 30px auto;
-            width: 80%;
+            width: 90%;
         }
-    </style>
-
-<style>
-      
-
+        /* ESTILOS DE LA CAJA DE COMENTARIOS ADAPTADOS A MÓVILES */
         .contenedor-comentarios {
             width: 100%;
             max-width: 500px;
             background: #ffffff;
-            padding: 20px;
+            padding: 15px;
             border-radius: 10px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin: 0 auto;
+            text-align: left;
         }
-
-        h2 {
+        .contenedor-comentarios h2 {
             margin-top: 0;
             color: #d97706;
             text-align: center;
         }
-
         textarea {
             width: 100%;
             height: 90px;
@@ -112,42 +133,17 @@
             box-sizing: border-box;
             margin-bottom: 10px;
         }
-
         textarea:focus {
             outline: none;
             border-color: #d97706;
             box-shadow: 0 0 0 2px rgba(217, 119, 6, 0.2);
         }
-
-        .btn-enviar {
-            width: 100%;
-            padding: 12px;
-            background-color: #d97706;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-weight: bold;
-            font-size: 15px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .btn-enviar:hover {
-            background-color: #b45309;
-        }
-
-        .btn-enviar:disabled {
-            background-color: #9ca3af;
-            cursor: not-allowed;
-        }
-
         .lista-comentarios {
-            margin-top: 25px;
+            margin-top: 20px;
             display: flex;
             flex-direction: column;
             gap: 12px;
         }
-
         .tarjeta-comentario {
             background-color: #fffbeb;
             border-left: 4px solid #d97706;
@@ -155,7 +151,6 @@
             border-radius: 0 6px 6px 0;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         }
-
         .tarjeta-comentario p {
             margin: 0;
             color: #1f2937;
@@ -163,7 +158,6 @@
             line-height: 1.4;
             word-wrap: break-word;
         }
-
         .tarjeta-comentario .fecha {
             font-size: 11px;
             color: #6b7280;
@@ -171,41 +165,33 @@
             text-align: right;
         }
     </style>
-
-
-
 </head>
 <body>
 
     <h1>Retratos del Mejor Grupo de Red del Mundo Mundial</h1>
 
+    <div class="video-responsive">
+        <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?si=NVcJEwdnJwLQDHYY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe> 
+    </div>
 
-    <!--video id="rick" src="RickRoll.mp4" autoplay controls playsinline muted loop></video-->
-
-    <iframe  width="560" height="315" src="https://www.youtube.com/embed/dQw4w9WgXcQ?si=NVcJEwdnJwLQDHYY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe> 
-
-
-<div class="contenedor-comentarios">
+    <!-- CAJA DE COMENTARIOS -->
+    <div class="contenedor-comentarios">
         <h2>💬 Caja de Comentarios</h2>
-        
         <textarea id="txtComentario" placeholder="Escribe tu mensaje o comentario..."></textarea>
-        <button id="btnEnviar" class="btn-enviar">Publicar Comentario</button>
+        <button id="btnEnviarComentario" class="btn-enviar">Publicar Comentario</button>
 
         <div id="listaComentarios" class="lista-comentarios">
             <p style="text-align:center; color:#6b7280;">Cargando comentarios...</p>
         </div>
     </div>
 
-   
+    <hr>
 
-
-
-
-	
+    <!-- SECCIÓN CÁMARA WEB -->
     <div class="contenedor">
-        <video id="cámara" autoplay playsinline width="640" height="480"></video>
-        <br><br>
-        <button id="btnCapturar"> Tomar Foto</button>
+        <video id="cámara" autoplay playsinline></video>
+        <br>
+        <button id="btnCapturar">📸 Tomar Foto</button>
     </div>
 
     <canvas id="canvas" style="display:none;"></canvas>
@@ -215,8 +201,9 @@
 
     <hr>
 
+    <!-- GALERÍA SHEETY -->
     <h2>Galería en la Nube (Sheety)</h2>
-    <button class="btn-cargar" onclick="cargarFotosDeSheety()">🔄 Actualizar Fotos </button>
+    <button class="btn-cargar" onclick="cargarTodoDeSheety()">🔄 Actualizar Datos</button>
     <div id="galeriaSheety" class="galeria">
         <p>Cargando fotos de la base de datos...</p>
     </div>
@@ -224,17 +211,21 @@
     <audio src="perro.mp3" autoplay controls loop></audio>
 
     <script>
-        
-		const SHEETY_API_URL = 'https://api.sheety.co/e747b19c10a06a356a61015e63a8ed11/fotossRed/hoja1';
+        const SHEETY_API_URL = 'https://api.sheety.co/e747b19c10a06a356a61015e63a8ed11/fotossRed/hoja1';
+
         const videoElement = document.getElementById('cámara');
         const btnCapturar = document.getElementById('btnCapturar');
         const canvas = document.getElementById('canvas');
         const contenedorCapturas = document.getElementById('capturas');
         const galeriaSheety = document.getElementById('galeriaSheety');
+        const txtComentario = document.getElementById('txtComentario');
+        const btnEnviarComentario = document.getElementById('btnEnviarComentario');
+        const listaComentarios = document.getElementById('listaComentarios');
 
+        // Inicializar Cámara
         async function iniciarCamara() {
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false });
                 videoElement.srcObject = stream;
             } catch (error) {
                 console.error("Error al acceder a la cámara:", error);
@@ -242,7 +233,8 @@
             }
         }
 
-        async function enviarASheety(base64Image) {
+        // Guardar Foto en Sheety
+        async function enviarFotoASheety(base64Image) {
             const bodyPayload = {
                 hoja1: {
                     fecha: new Date().toLocaleString(),
@@ -252,9 +244,7 @@
 
             const response = await fetch(SHEETY_API_URL, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(bodyPayload)
             });
 
@@ -263,42 +253,60 @@
                 throw new Error(`Error HTTP ${response.status}: ${errorTexto}`);
             }
 
-            console.log("¡Foto guardada con éxito en Sheety!");
-            await cargarFotosDeSheety();
+            console.log("¡Foto guardada en Sheety!");
+            await cargarTodoDeSheety();
         }
 
-        async function cargarFotosDeSheety() {
-            if (!galeriaSheety) return;
-            galeriaSheety.innerHTML = "<p>Cargando fotos desde Sheety...</p>";
+        // Guardar Comentario en Sheety
+        async function enviarComentarioASheety(texto) {
+            const bodyPayload = {
+                hoja1: {
+                    fecha: new Date().toLocaleString(),
+                    comentario: texto
+                }
+            };
+
+            const response = await fetch(SHEETY_API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(bodyPayload)
+            });
+
+            if (!response.ok) {
+                const errorTexto = await response.text();
+                throw new Error(`Error HTTP ${response.status}: ${errorTexto}`);
+            }
+
+            console.log("¡Comentario guardado!");
+            await cargarTodoDeSheety();
+        }
+
+        // Cargar Fotos y Comentarios
+        async function cargarTodoDeSheety() {
+            if (galeriaSheety) galeriaSheety.innerHTML = "<p>Cargando fotos...</p>";
+            if (listaComentarios) listaComentarios.innerHTML = "<p style='text-align:center;'>Cargando comentarios...</p>";
 
             try {
                 const response = await fetch(SHEETY_API_URL, {
                     method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
+                    headers: { 'Content-Type': 'application/json' }
                 });
 
-                if (!response.ok) {
-                    throw new Error(`Error HTTP: ${response.status}`);
-                }
+                if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
 
                 const data = await response.json();
-                console.log("Respuesta raw de Sheety:", data);
-
                 const primeraClave = Object.keys(data)[0];
                 const filas = data[primeraClave] || [];
 
                 galeriaSheety.innerHTML = "";
+                listaComentarios.innerHTML = "";
 
-                if (!Array.isArray(filas) || filas.length === 0) {
-                    galeriaSheety.innerHTML = "<p>No hay fotos en Sheety aún.</p>";
-                    return;
-                }
+                let tieneFotos = false;
+                let tieneComentarios = false;
 
                 filas.reverse().forEach((fila, index) => {
+                    // BUSCAR FOTOS
                     let base64Texto = null;
-
                     for (const clave in fila) {
                         const valor = String(fila[clave]);
                         if (valor.startsWith('data:image')) {
@@ -308,39 +316,56 @@
                     }
 
                     if (base64Texto) {
+                        tieneFotos = true;
                         const tarjeta = document.createElement('div');
                         tarjeta.className = 'tarjeta-foto';
-                        tarjeta.style.margin = "10px";
-                        tarjeta.style.display = "inline-block";
 
                         const img = document.createElement('img');
                         img.src = base64Texto;
                         img.alt = `Foto ${index + 1}`;
-                        img.style.maxWidth = "300px";
-                        img.style.borderRadius = "8px";
-                        img.style.border = "2px solid #d97706";
 
                         const fechaTexto = document.createElement('p');
-                        fechaTexto.textContent = fila.fecha || `Foto #${filas.length - index}`;
-                        fechaTexto.style.fontSize = "12px";
-                        fechaTexto.style.color = "#333";
+                        fechaTexto.textContent = fila.fecha || 'Sin fecha';
 
                         tarjeta.appendChild(img);
                         tarjeta.appendChild(fechaTexto);
                         galeriaSheety.appendChild(tarjeta);
                     }
+
+                    // BUSCAR COMENTARIOS
+                    const textoComentario = fila.comentario || fila.Comentario;
+                    if (textoComentario && String(textoComentario).trim() !== "") {
+                        tieneComentarios = true;
+                        const tarjetaC = document.createElement('div');
+                        tarjetaC.className = 'tarjeta-comentario';
+
+                        const pTexto = document.createElement('p');
+                        pTexto.textContent = textoComentario;
+
+                        const pFecha = document.createElement('div');
+                        pFecha.className = 'fecha';
+                        pFecha.textContent = fila.fecha || 'Sin fecha';
+
+                        tarjetaC.appendChild(pTexto);
+                        tarjetaC.appendChild(pFecha);
+                        listaComentarios.appendChild(tarjetaC);
+                    }
                 });
 
+                if (!tieneFotos) galeriaSheety.innerHTML = "<p>No hay fotos guardadas aún.</p>";
+                if (!tieneComentarios) listaComentarios.innerHTML = "<p style='text-align:center;'>No hay comentarios aún. ¡Sé el primero!</p>";
+
             } catch (error) {
-                console.error("Error al cargar fotos:", error);
-                galeriaSheety.innerHTML = "<p style='color:red;'>Error al cargar las fotos. Revisa la consola (F12).</p>";
+                console.error("Error al cargar desde Sheety:", error);
+                if (galeriaSheety) galeriaSheety.innerHTML = "<p style='color:red;'>Error al cargar las fotos.</p>";
+                if (listaComentarios) listaComentarios.innerHTML = "<p style='color:red; text-align:center;'>Error al cargar los comentarios.</p>";
             }
         }
 
-        // --- AHORA SÍ: EVENTO REINTEGRADO PARA EL BOTÓN ---
+        // EVENTO TOMAR FOTO
         btnCapturar.addEventListener('click', async () => {
             try {
-                // Reducimos resolución para garantizar que entre en la celda de Google Sheets
+                // IMPORTANTE: Mantenemos 240px de ancho para no saturar la celda de Google Sheets y evitar el Error 500
                 const anchoObjetivo = 1000;
                 const proporcion = anchoObjetivo / videoElement.videoWidth;
 
@@ -350,10 +375,8 @@
                 const context = canvas.getContext('2d');
                 context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
 
-                // Compresión JPEG liviana
                 const imageDataURL = canvas.toDataURL('image/jpeg', 0.2);
 
-                // Vista previa local inmediata
                 contenedorCapturas.innerHTML = "";
                 const img = document.createElement('img');
                 img.src = imageDataURL;
@@ -362,20 +385,43 @@
                 btnCapturar.disabled = true;
                 btnCapturar.textContent = "Guardando...";
 
-                await enviarASheety(imageDataURL);
+                await enviarFotoASheety(imageDataURL);
 
             } catch (err) {
                 console.error("Fallo durante la captura:", err);
-                alert("Ocurrió un error al procesar o enviar la foto a Sheety.");
+                alert("Ocurrió un error al procesar la foto.");
             } finally {
-                // Se desbloquea siempre
                 btnCapturar.disabled = false;
                 btnCapturar.textContent = "📸 Tomar Foto";
             }
         });
 
+        // EVENTO ENVIAR COMENTARIO
+        btnEnviarComentario.addEventListener('click', async () => {
+            const texto = txtComentario.value.trim();
+            if (!texto) {
+                alert("Por favor escribe un mensaje antes de publicar.");
+                return;
+            }
+
+            try {
+                btnEnviarComentario.disabled = true;
+                btnEnviarComentario.textContent = "Publicando...";
+
+                await enviarComentarioASheety(texto);
+
+                txtComentario.value = "";
+            } catch (err) {
+                console.error("Fallo al publicar comentario:", err);
+                alert("Ocurrió un error al enviar el comentario.");
+            } finally {
+                btnEnviarComentario.disabled = false;
+                btnEnviarComentario.textContent = "Publicar Comentario";
+            }
+        });
+
         iniciarCamara();
-        cargarFotosDeSheety();
+        cargarTodoDeSheety();
     </script>
 </body>
 </html>
@@ -385,177 +431,7 @@
 
 
 
-<!--html>
 
-
-<head>
-
-
-	<meta charset="UTF-8">
-    <title>Cámara Web con Captura</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin-top: 20px;
-        }
-        .contenedor {
-            margin-bottom: 20px;
-        }
-        #capturas {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 20px;
-        }
-        #capturas img {
-            border: 2px solid #ccc;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-
-        <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin-top: 20px;
-            background-color: #f4f1ea;
-        }
-        .contenedor {
-            margin-bottom: 20px;
-        }
-        /* APLICAMOS EL FILTRO AL VIDEO */
-        #cámara {
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            filter: sepia(0.6) saturate(1.8) hue-rotate(-15deg) contrast(1.1);
-        }
-        #btnCapturar {
-            padding: 12px 24px;
-            font-size: 16px;
-            cursor: pointer;
-            background-color: #d97706;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-weight: bold;
-        }
-        #btnCapturar:hover {
-            background-color: #b45309;
-        }
-        #capturas {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 20px;
-        }
-        #capturas img {
-            border: 2px solid #d97706;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-
-
-    	#rick {
-    	position: fixed;
-    	top: 0;
-    	left: 0;
-    	width: 100vw;
-    	height: 100vh;
-    	object-fit: cover; /* Evita que el video se deforme */
-    	z-index: -1;     /* Lo manda detrás de todo el contenido */
-}
-        }
-
-
-    </style>
-
-
-
-</style>
-
-</head>
-
-<body>
-
-
-	<h1> 3 de Noviembre del 2026</h1>
-
-	<video id="rick" src="RickRoll.mp4" autoplay controls playsinline> 
-	</video>
-
-	<div class="contenedor">
-        <Tu etiqueta video con el id "cámara">
-        <video id="cámara" autoplay playsinline width="640" height="480"></video>
-        <br><br>
-        <Botón para tomar la captura ->
-        <button id="btnCapturar" style="padding: 10px 20px; font-size: 16px; cursor: pointer;">📸 Tomar Foto</button>
-    </div>
-
-    <!-- Canvas oculto para procesar la imagen ->
-    <canvas id="canvas" style="display:none;"></canvas>
-
-    <!-- Contenedor donde se mostrarán las fotos capturadas ->
-    <h3>Tus Capturas:</h3>
-    <div id="capturas"></div>
-
-    <script>
-        const videoElement = document.getElementById('cámara');
-        const btnCapturar = document.getElementById('btnCapturar');
-        const canvas = document.getElementById('canvas');
-        const contenedorCapturas = document.getElementById('capturas');
-
-        // Función para encender la cámara
-        async function iniciarCamara() {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-                videoElement.srcObject = stream;
-            } catch (error) {
-                console.error("Hubo un error al acceder a la cámara: ", error);
-                alert("No se pudo acceder a la cámara. Revisa los permisos de tu navegador.");
-            }
-        }
-
-        // Evento al hacer clic en el botón de capturar
-        btnCapturar.addEventListener('click', () => {
-            // Ajustamos el tamaño del canvas al tamaño actual del video
-            canvas.width = videoElement.videoWidth;
-            canvas.height = videoElement.videoHeight;
-
-            // Dibujamos elfotograma actual del video en el canvas
-            const context = canvas.getContext('2d');
-            context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
-
-            // Convertimos la imagen del canvas a formato PNG (base64)
-            const imageDataURL = canvas.toDataURL('image/png');
-
-            // Creamos una etiqueta <img> para mostrar la foto
-            const img = document.createElement('img');
-            img.src = imageDataURL;
-            img.width = 320; // Tamaño de visualización en la página
-
-            // Agregamos la nueva foto al inicio del contenedor
-            contenedorCapturas.prepend(img);
-        });
-
-        // Ejecutamos la función al cargar la página
-        iniciarCamara();
-    </script><
-
-
-
-
-
-
-	<audio src="perro.mp3" autoplay controls loop>
-	
-	</audio>
-
-</body>
-
-</html-->
 
 
 
