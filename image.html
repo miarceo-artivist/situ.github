@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+	<head>
+
+
+		<style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #CFC199;
+      margin: 0;
+      padding: 0px 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    /* Formulario compactado sin nombre */
+    .caja-formulario {
+      background: #CFC199;
+      padding: 16px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      width: 90%;
+      max-width: 400px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 20;
+    }
+
+    textarea {
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 14px;
+      resize: none;
+    }
+
+    button {
+      padding: 11px;
+      background-color: #2b2d42;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #1a1b29;
+    }
+
+    /* Contenedor que abarca todo el ancho de la pantalla */
+    .zona-caida {
+      flex: 1;
+      width: 100vw; /* Ocupa el 100% del ancho de la ventana */
+      height: 100vw;
+      display: flex;
+      flex-direction: column;
+      /*justify-content: flex-end;*/
+      padding: 0 30px 15px 30px;
+      overflow: hidden;
+    }
+
+    /* Texto suelto disperso a lo ancho */
+    .texto-suelto {
+      z-index: 100;
+      background: transparent;
+      color: red;
+      font-size: 27px;
+      padding: 3px 8px;
+      margin-top: -5px;
+      max-width: 45%;
+      word-wrap: break-word;
+      animation: caerAlFondo 1.1s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+    }
+
+    @keyframes caerAlFondo {
+      0% {
+        opacity: 0;
+        transform: translateY(-75vh) rotate(-6deg);
+      }
+      70% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+  </style>
+
+
+
+
+	</head>
+
+	<body>
+
+
+
+ <img style="z-index:5; position: absolute; height: 100% ; padding: 0%; margin:auto;" src= "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQFWcnm0sKxJ5M36TTc6RBhKwh6THDCLejdbsnHLgLXoskfabMVQn6-P_w&s=10">
+
+		  <form Style="display:none;"class="caja-formulario" id="formComentario">
+    <textarea id="mensaje" rows="2" placeholder="Escribe un mensaje..." required></textarea>
+    <button type="submit" id="btnEnviar">Soltar texto</button>
+  </form>
+
+<a href="texto.html">
+		<div class="zona-caida" id="zonaCaida"></div>
+</a>
+
+  <script>
+    // CONFIGURA TU URL DE SHEETY AQUÍ
+    const SHEETY_URL = 'https://api.sheety.co/e747b19c10a06a356a61015e63a8ed11/entrega/hoja1';
+    const NOMBRE_HOJA = 'hoja1'; 
+
+    const form = document.getElementById('formComentario');
+    const zonaCaida = document.getElementById('zonaCaida');
+    const btnEnviar = document.getElementById('btnEnviar');
+
+    function soltarTexto(mensaje) {
+      const div = document.createElement('div');
+      div.className = 'texto-suelto';
+      div.textContent = mensaje;
+
+      // Posición horizontal aleatoria entre 2% y 60% del ancho
+      const posicionIzquierda = Math.floor(Math.random() * 58) + 2;
+      const angulo = (Math.random() * 6 - 3).toFixed(2);
+
+      div.style.marginLeft = `${posicionIzquierda}%`;
+      div.style.transform = `rotate(${angulo}deg)`;
+
+      zonaCaida.appendChild(div);
+    }
+
+    async function cargarComentarios() {
+      try {
+        const respuesta = await fetch(SHEETY_URL);
+        const datos = await respuesta.json();
+        const lista = datos[NOMBRE_HOJA] || [];
+
+        lista.forEach(item => {
+          if (item.mensaje) {
+            soltarTexto(item.mensaje);
+          }
+        });
+      } catch (error) {
+        console.error('Error al cargar comentarios:', error);
+      }
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      btnEnviar.disabled = true;
+      btnEnviar.textContent = 'Enviando...';
+
+      const mensaje = document.getElementById('mensaje').value.trim();
+
+      const body = {
+        [NOMBRE_HOJA]: {
+          mensaje: mensaje
+        }
+      };
+
+      try {
+        const respuesta = await fetch(SHEETY_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+
+        if (respuesta.ok) {
+          soltarTexto(mensaje);
+          form.reset();
+        } else {
+          alert('No se pudo guardar. Revisa los permisos POST en Sheety.');
+        }
+      } catch (error) {
+        console.error('Error al enviar:', error);
+      } finally {
+        btnEnviar.disabled = false;
+        btnEnviar.textContent = 'Soltar texto';
+      }
+    });
+
+    cargarComentarios();
+  </script>
+
+
+	</body>
+
+</html>

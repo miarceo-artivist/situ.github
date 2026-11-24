@@ -1,0 +1,313 @@
+
+html, body{
+	
+	background-color: black;
+	height:100%;
+	widht:100%;
+	box-sizing: border-box;
+
+}
+
+.a1 h1{
+	
+	font-size:90%;
+	text-align:left;
+	font-size:120%;
+
+}
+
+h1,p {
+	color: white;
+	font-family:sans-serif;
+	font-size:130%;
+	
+	
+}
+
+
+
+.a1{
+	
+	height:15%;
+	widht:15%;
+	
+	margin-top:15%;
+	margin-left:0%;
+	margin-right:2%;
+	float:center;
+	padding-top:;
+	padding:20%;
+	
+
+
+}
+
+
+
+.a2{
+	margin-top:20%;
+	margin-left:2%;
+	margin-right:10%;
+	
+	padding:0%;
+	widht: ;
+	height:40%;
+	float:left;
+
+}
+.a2 img{
+
+	height:80%;
+
+
+}
+
+.b1 img{
+	height:700px;
+	z-index:5;
+	position:relative;
+	float:left;
+	display:inline;
+
+}
+
+
+
+
+.b2{
+	position:absolute;
+	z-index:10;
+	left:0;
+	top:5;
+	padding-left:5%;
+	padding-top:5%;
+	
+}
+
+.b1 {
+	overflow:hidden;
+	white-space:nowrap;
+	display:inline-block;
+	
+	position:abolute;
+	float:left;
+	height:100%;
+	width:100%;
+	left:5; 
+	top:5;
+}
+
+.b1_m {
+	
+	display: inline-block;
+	paddingleft:0%;
+	height:100%;
+	width: 100%;
+	animation-name: marquee;
+	animation-duration: 18s;	
+	animation-iteration-count: infinite;
+	animation-timing-function: linear;
+
+	
+}
+
+.b1_m a{
+
+	height:100%;
+	display: inline-block;
+	overflow:hidden;
+	white-space:nowrap;
+	
+
+}
+
+@keyframes marquee {
+	0%{
+	transform:translatex(0%);}
+	50% {
+	transform:translatex(-130%);
+	}
+	100%{transform:translatex(0%T);
+	}
+
+}
+
+
+/*   Sputnik  */
+
+
+
+
+ 
+.s1{
+
+	overflow: clip;
+	height:45%;
+	position:absolute;
+	top:70%;
+	animation-name: satelite;
+	animation-duration: 1s;	
+	animation-iteration-count: infinite;
+	animation-timing-function: linear;
+	
+	
+
+} 
+ 
+.s1 img{
+
+	height:100%;
+	
+	
+
+}
+
+
+.beep{
+	padding:15%;
+
+
+}
+ 
+ 
+.beep a{
+
+	color: white;
+	font-family:sans-serif;
+	font-size:100%;
+	text-decoration: none;
+
+}
+
+
+.beep a:hover{
+	color:red;
+
+	
+
+
+}
+
+.mun a{
+
+	color: white;
+	font-family:sans-serif;
+	font-size:100%;
+	text-decoration: none;
+
+}
+
+
+.mun a:hover{
+	color:blue;
+
+}
+ 
+@keyframes satelite {
+	0%{
+	transform:translate(-100%,0%);
+	}
+	100% {
+	transform:translate(1000%,-100%);
+	}
+}
+
+/* gemini   */
+
+
+ .gem{
+	height:10%;
+	position:absolute ;
+	top:10%;
+	animation-name: capsule;
+	animation-duration: 10s;	
+	animation-iteration-count: infinite;
+	animation-timing-function: linear;
+	
+		 }
+
+.gem img{
+	height:100%;
+
+}
+
+
+.gem1 a{
+
+	color: white;
+	font-family:sans-serif;
+	font-size:100%;
+	text-decoration: none;
+
+
+}	
+
+
+.gem1 a:hover{
+
+	color: black;
+
+
+
+}	
+		 
+
+
+@keyframes capsule{
+	0%{
+	transform:translate(-200%,0%)rotate(40deg);
+	}
+	100% {
+	transform:translate(1400%,900%)rotate(50deg);
+	}	
+}
+
+/* Space Walk*/
+
+.walk_txt{
+	position:absolute;
+	top:5%;
+	padding-left:2%;
+
+
+}
+
+.walk_txt p,a{
+	color: rgba(0,0,0,0);
+	font-size: 150%;
+
+}
+
+.walk_txt span:hover{
+	
+	color:white;
+	font-size:150%;
+
+
+}
+
+.walk_txt a:hover{
+	
+	color:yellow;
+	font-size:150%;
+	text-decoration:none;
+
+}
+
+.walk {
+
+	height:100%;
+
+
+
+
+}
+
+.walk img{
+
+	height:100%;
+
+
+}
+
+
