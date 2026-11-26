@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Himno Nacional de Colombia</title>
+  <!-- Tailwind CSS para diseño responsivo y utilidades modernas -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Fuentes clásicas estilo Wikipedia: Linux Libertine / Georgia para títulos y sistema sans-serif para lectura -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Libertinus+Serif:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Lato', 'Helvetica', 'Arial', 'sans-serif'],
+            serif: ['"Libertinus Serif"', 'Georgia', 'Times', '"Times New Roman"', 'serif'],
+          },
+          colors: {
+            wiki: {
+              bg: '#ffffff',
+              surface: '#f8f9fa',
+              border: '#eaecf0',
+              borderDark: '#a2a9b1',
+              text: '#202122',
+              muted: '#54595d',
+              link: '#3366cc',
+              linkHover: '#447ff5',
+              linkVisited: '#795cb2',
+              blueBg: '#eaf3ff',
+              infoboxHeader: '#cee0f2',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    .contenedor {
+      white-space: pre-line;
+
+    }
+  </style>
+
+
+</head>
+<body class="bg-wiki-bg text-wiki-text font-sans antialiased selection:bg-wiki-blueBg">
+
+  <!-- Barra de notificaciones / Toast (reemplaza alert() para acciones interactivas) -->
+  <div id="wiki-toast" class="fixed bottom-5 right-5 z-50 hidden max-w-sm rounded border border-wiki-borderDark bg-white px-4 py-3 text-sm shadow-lg transition-all">
+    <div class="flex items-start gap-3">
+      <span class="mt-0.5 text-wiki-link font-bold">ⓘ</span>
+      <div class="flex-1">
+        <p id="wiki-toast-title" class="font-semibold text-wiki-text">Aviso de Wikipedia</p>
+        <p id="wiki-toast-msg" class="mt-0.5 text-xs text-wiki-muted">Mensaje de información.</p>
+      </div>
+      <button onclick="hideToast()" class="text-wiki-muted hover:text-wiki-text text-xs font-bold p-1" aria-label="Cerrar notificación">✕</button>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       CABECERA SUPERIOR (Vector 2022)
+       ===================================================================== -->
+  <header class="sticky top-0 z-30 bg-white border-b border-wiki-border">
+    <div class="max-w-[1560px] mx-auto px-3 sm:px-6 h-14 flex items-center justify-between gap-2 sm:gap-4">
+      
+      <!-- Izquierda: Botón menú hamburguesa + Logo de Wikipedia -->
+      <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+        <button id="menu-toggle-btn" onclick="toggleMainMenu()" class="p-2 rounded hover:bg-wiki-surface text-wiki-text focus:outline-none" title="Menú principal" aria-label="Menú principal">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+
+        <a href="#top" class="flex items-center gap-2.5 group">
+          <!-- Esfera / Emblema minimalista SVG estilo Wikipedia -->
+          <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-wiki-surface border border-wiki-borderDark flex items-center justify-center shadow-inner shrink-0">
+            <span class="font-serif font-semibold text-xl sm:text-2xl tracking-tighter text-wiki-text select-none">W</span>
+          </div>
+          <div class="flex flex-col leading-tight">
+            <span class="font-serif text-base sm:text-lg tracking-wider uppercase font-normal text-wiki-text">Wikipedia</span>
+            <span class="text-[11px] text-wiki-muted hidden sm:inline">La enciclopedia libre</span>
+          </div>
+        </a>
+      </div>
+
+      <!-- Centro: Buscador estilo Vector 2022 -->
+      <div class="flex-1 max-w-xl mx-2">
+        <form onsubmit="handleSearch(event)" class="relative flex items-center w-full">
+          <div class="relative flex-1 flex items-center">
+            <span class="absolute left-3 text-wiki-muted pointer-events-none">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="8"/><path stroke-linecap="round" d="m21 21-4.35-4.35"/>
+              </svg>
+            </span>
+            <input 
+              id="wiki-search-input"
+              type="search" 
+              placeholder="Buscar en Wikipedia (ej. Turing, ENIAC, Transistor)..." 
+              class="w-full pl-9 pr-3 py-1.5 text-sm bg-white border border-wiki-borderDark rounded-l focus:outline-none focus:border-wiki-link focus:ring-1 focus:ring-wiki-link"
+            >
+          </div>
+          <button 
+            type="submit" 
+            class="px-3.5 py-1.5 text-sm font-semibold bg-wiki-surface hover:bg-wiki-border text-wiki-text border border-l-0 border-wiki-borderDark rounded-r transition-colors">
+            Buscar
+          </button>
+        </form>
+      </div>
+
+      <!-- Derecha: Acciones de cuenta y herramientas personales -->
+      <nav class="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm shrink-0">
+        <button onclick="showToast('Donaciones', 'Gracias por apoyar el conocimiento libre en Wikimedia.')" class="hidden lg:inline text-wiki-link hover:underline">Donaciones</button>
+        <button onclick="showToast('Crear una cuenta', 'Formulario de registro de editor simulado.')" class="hidden md:inline text-wiki-link hover:underline">Crear una cuenta</button>
+        <button onclick="showToast('Acceder', 'Inicio de sesión de usuario simulado.')" class="text-wiki-link hover:underline font-medium px-2 py-1 rounded hover:bg-wiki-surface">Acceder</button>
+        <button onclick="toggleAppearancePanel()" class="p-2 rounded hover:bg-wiki-surface text-wiki-muted hover:text-wiki-text" title="Opciones de apariencia" aria-label="Opciones de apariencia">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z"/>
+          </svg>
+        </button>
+      </nav>
+    </div>
+
+    <!-- Menú desplegable de navegación principal (oculto por defecto) -->
+    <div id="main-nav-drawer" class="hidden border-t border-wiki-border bg-wiki-surface px-4 sm:px-6 py-4 shadow-md">
+      <div class="max-w-[1560px] mx-auto grid grid-cols-1 sm:grid-cols-3 gap-6 text-xs">
+        <div>
+          <h4 class="font-bold text-wiki-muted uppercase tracking-wider border-b border-wiki-border pb-1 mb-2">Navegación</h4>
+          <ul class="space-y-1.5 text-wiki-link">
+            <li><a href="#top" onclick="toggleMainMenu()" class="hover:underline">Portada</a></li>
+            <li><a href="#sec-pioneros" onclick="toggleMainMenu()" class="hover:underline">Portal de la comunidad</a></li>
+            <li><a href="#sec-generaciones" onclick="toggleMainMenu()" class="hover:underline">Actualidad</a></li>
+            <li><a href="#sec-referencias" onclick="toggleMainMenu()" class="hover:underline">Cambios recientes</a></li>
+            <li><a href="#sec-moderna" onclick="toggleMainMenu()" class="hover:underline">Página aleatoria</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-bold text-wiki-muted uppercase tracking-wider border-b border-wiki-border pb-1 mb-2">Colaborar</h4>
+          <ul class="space-y-1.5 text-wiki-link">
+            <li><button onclick="toggleEditMode(); toggleMainMenu();" class="hover:underline text-left">Editar esta plantilla</button></li>
+            <li><button onclick="showToast('Ayuda', 'Esta plantilla utiliza HTML5 y Tailwind CSS.')" class="hover:underline text-left">Ayuda sobre edición</button></li>
+            <li><button onclick="showToast('Café', 'Espacio de discusión comunitaria.')" class="hover:underline text-left">Café de Wikipedia</button></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-bold text-wiki-muted uppercase tracking-wider border-b border-wiki-border pb-1 mb-2">Herramientas</h4>
+          <ul class="space-y-1.5 text-wiki-link">
+            <li><button onclick="window.print()" class="hover:underline text-left">Versión para imprimir</button></li>
+            <li><button onclick="copyArticleCitation()" class="hover:underline text-left">Citar este artículo</button></li>
+            <li><button onclick="showToast('Enlace permanente', 'URL copiada al portapapeles.')" class="hover:underline text-left">Enlace permanente</button></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- =====================================================================
+       CONTENEDOR PRINCIPAL DE TRES COLUMNAS (Vector 2022)
+       ===================================================================== -->
+  <div id="top" class="max-w-[1560px] mx-auto px-3 sm:px-6 pt-4 pb-16">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+      <!-- =================================================================
+           COLUMNA IZQUIERDA: ÍNDICE DE CONTENIDOS (TOC Sticky)
+           ================================================================= -->
+      <aside class="hidden lg:block lg:col-span-2 sticky top-16 max-h-[calc(100vh-5rem)] overflow-y-auto pr-2 text-xs">
+        <div class="pb-2 mb-2 border-b border-wiki-border flex items-center justify-between">
+          <span class="font-bold text-wiki-text">Contenidos</span>
+          <button id="toc-collapse-btn" onclick="toggleDesktopToc()" class="px-1.5 py-0.5 rounded bg-wiki-surface hover:bg-wiki-border text-wiki-muted text-[11px]">ocultar</button>
+        </div>
+        <nav id="desktop-toc-list" aria-label="Tabla de contenidos">
+          <ul class="space-y-1.5 text-wiki-link">
+            <li><a href="#top" class="font-semibold text-wiki-text hover:underline block py-0.5">Inicio</a></li>
+            <li>
+              <a href="#sec-origenes" class="toc-link hover:underline block py-0.5">1. Núñez y Caro</a>
+              <ul class="pl-3 mt-1 space-y-1 border-l border-wiki-border">
+                <li><a href="#sec-abaco" class="toc-link hover:underline block py-0.5">Las ambiciones de los poetas de por aquel entonces</a></li>
+    
+              </ul>
+            </li>
+            <li><a href="#sec-pioneros" class="toc-link hover:underline block py-0.5">2. Himno Nacional de la República de Colombia </a></li>
+            <li>
+              <a href="#sec-generaciones" class="toc-link hover:underline block py-0.5">3. ¿Para qué seguir?</a>
+              <ul class="pl-3 mt-1 space-y-1 border-l border-wiki-border">
+                <li><a href="#sec-primera-gen" class="toc-link hover:underline block py-0.5">3.1 Indalecio Arevalo Aguirre</a></li>
+           
+              </ul>
+            </li>
+          </ul>
+        </nav>
+      </aside>
+
+      <!-- =================================================================
+           COLUMNA CENTRAL: ARTÍCULO PRINCIPAL
+           ================================================================= -->
+      <main id="article-content" class="lg:col-span-8 min-w-0">
+        
+        <!-- Encabezado del Artículo: Título + Selector de Idiomas -->
+        <div class="flex flex-wrap items-baseline justify-between gap-2 border-b border-wiki-borderDark pb-1">
+          <h1 id="article-title" class="font-serif text-2xl sm:text-[28px] md:text-[32px] font-normal text-wiki-text leading-tight">
+            Himno Nacional de  <a href="pixels.html">Colombia </a>
+          </h1>
+          
+          <!-- Botón selector de idiomas -->
+          <div class="relative">
+            <button onclick="toggleLangMenu()" class="flex items-center gap-1.5 px-2.5 py-1 rounded text-xs sm:text-sm font-medium text-wiki-link hover:bg-wiki-blueBg transition-colors">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"/>
+              </svg>
+              <span>142 idiomas</span>
+              <span class="text-[10px]">▼</span>
+            </button>
+            <div id="lang-dropdown" class="hidden absolute right-0 mt-1 w-48 bg-white border border-wiki-borderDark rounded shadow-lg py-1.5 z-20 text-xs">
+              <div class="px-3 py-1 text-wiki-muted font-semibold border-b border-wiki-border">Otros idiomas</div>
+              <a href="#top" onclick="showToast('Idioma', 'Cambiando vista previa a English...'); toggleLangMenu();" class="block px-3 py-1.5 text-wiki-link hover:bg-wiki-surface">English</a>
+              <a href="#top" onclick="showToast('Idioma', 'Cambiando vista previa a Français...'); toggleLangMenu();" class="block px-3 py-1.5 text-wiki-link hover:bg-wiki-surface">Français</a>
+              <a href="#top" onclick="showToast('Idioma', 'Cambiando vista previa a Deutsch...'); toggleLangMenu();" class="block px-3 py-1.5 text-wiki-link hover:bg-wiki-surface">Deutsch</a>
+              <a href="#top" onclick="showToast('Idioma', 'Cambiando vista previa a Português...'); toggleLangMenu();" class="block px-3 py-1.5 text-wiki-link hover:bg-wiki-surface">Português</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Barra de Pestañas (Artículo / Discusión | Leer / Editar / Ver historial) -->
+        <div class="flex flex-wrap items-center justify-between border-b border-wiki-border text-xs sm:text-[13px] mb-3">
+          <!-- Pestañas Izquierda -->
+          <div class="flex items-center gap-4">
+            <button id="tab-article" onclick="switchViewTab('article')" class="py-2 border-b-2 border-wiki-text font-semibold text-wiki-text">
+              Artículo
+            </button>
+            <button id="tab-talk" onclick="switchViewTab('talk')" class="py-2 border-b-2 border-transparent text-wiki-link hover:border-wiki-borderDark">
+              Discusión
+            </button>
+          </div>
+
+          <!-- Pestañas Derecha -->
+          <div class="flex items-center gap-3 sm:gap-4">
+            <button id="tab-read" onclick="switchViewTab('article')" class="py-2 border-b-2 border-wiki-text font-semibold text-wiki-text">
+              Leer
+            </button>
+            <button id="tab-edit" onclick="toggleEditMode()" class="py-2 border-b-2 border-transparent text-wiki-link hover:border-wiki-borderDark">
+              Editar
+            </button>
+            <button id="tab-history" onclick="switchViewTab('history')" class="py-2 border-b-2 border-transparent text-wiki-link hover:border-wiki-borderDark">
+              Ver historial
+            </button>
+          </div>
+        </div>
+
+        <!-- Subtítulo clásico de Wikipedia -->
+        <div class="text-xs text-wiki-muted mb-3 flex flex-wrap items-center justify-between gap-2">
+          <span>De Wikipedia, la enciclopedia libre</span>
+          <span id="edit-mode-badge" class="hidden px-2 py-0.5 rounded bg-amber-100 text-amber-900 border border-amber-300 font-medium">
+            ✎ Modo de edición activo: haz clic sobre cualquier párrafo para modificarlo
+          </span>
+        </div>
+
+        <!-- VISTA 1: CONTENIDO DEL ARTÍCULO -->
+        <div id="view-article" class="text-[15px] leading-[1.65] text-wiki-text">
+          
+ 
+
+          <!-- =============================================================
+               INFOBOX (FICHA TÉCNICA LATERAL DERECHA)
+               ============================================================= -->
+          <aside class="w-full sm:w-72 md:w-80 sm:float-right sm:ml-6 mb-5 border border-wiki-borderDark bg-wiki-surface text-xs rounded-sm overflow-hidden shadow-xs">
+            <table class="w-full border-collapse">
+              <thead>
+                <tr>
+                  <th colspan="2" class="bg-wiki-infoboxHeader text-wiki-text font-bold text-sm py-2 px-3 text-center border-b border-wiki-borderDark">
+                    Regenerción
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-wiki-border">
+                <!-- Imagen destacada con fallback -->
+                <tr>
+                  <td colspan="2" class="p-2.5 text-center bg-white">
+                    <img 
+                      src="https://catalogoenlinea.bibliotecanacional.gov.co/custom/web/content/ebooks/caballero_web/images/capitulo8/13-TRES-POETAS.jpg" 
+                      onerror="this.onerror=null;this.src='https://placehold.co/480x320/eaf3ff/202122?text=ENIAC+(1945)+-+Computador+Electrónico';"
+                      alt="Programadoras operando el computador ENIAC en 1945" 
+                      class="w-full h-auto rounded-xs border border-wiki-border mx-auto"
+                    >
+                    <p class="mt-1.5 text-[11px] text-wiki-muted leading-snug">
+                      José Asunción Silva aterrado de ver la Sombra de Núñez y Caro.
+                    </p>
+                  </td>
+                </tr>
+
+                <!-- Cabecera de sección dentro de la Infobox -->
+                <tr>
+                  <th colspan="2" class="bg-wiki-infoboxHeader/70 text-wiki-text font-semibold py-1 px-2.5 text-center">
+                    Datos generales
+                  </th>
+                </tr>
+                <tr>
+                  <th class="py-1.5 px-2.5 text-left font-semibold text-wiki-text align-top w-1/3">Disciplina</th>
+                  <td class="py-1.5 px-2.5 text-wiki-text">
+                    <a href="#sec-pioneros" class="text-wiki-link hover:underline">Historia</a> e <a href="#sec-generaciones" class="text-wiki-link hover:underline">Historieta</a>
+                  </td>
+                </tr>
+                <tr>
+                  <th class="py-1.5 px-2.5 text-left font-semibold text-wiki-text align-top">Precursores</th>
+                  <td class="py-1.5 px-2.5 text-wiki-text">
+                    <a href="#sec-abaco" class="text-wiki-link hover:underline">La Nueva Granada</a>, <a href="#sec-abaco" class="text-wiki-link hover:underline">Mosquerismo</a>, <a href="#sec-babbage" class="text-wiki-link hover:underline">Olvido Nacional</a>
+                  </td>
+                </tr>
+                <tr>
+                  <th class="py-1.5 px-2.5 text-left font-semibold text-wiki-text align-top">Pioneros clave</th>
+                  <td class="py-1.5 px-2.5 text-wiki-text">
+                   Tomás Cipriano de Mósquera, Simón Bolivar, Tola y Maruja. 
+                  </td>
+                </tr>
+                <tr>
+                  <th class="py-1.5 px-2.5 text-left font-semibold text-wiki-text align-top">Hito inicial</th>
+                  <td class="py-1.5 px-2.5 text-wiki-text">1810 (Desportillar un florero)</td>
+                </tr>
+                <tr>
+                  <th class="py-1.5 px-2.5 text-left font-semibold text-wiki-text align-top">Era moderna</th>
+                  <td class="py-1.5 px-2.5 text-wiki-text">1492–presente</td>
+                </tr>
+
+                <!-- Cabecera secundaria -->
+                <tr>
+                  <th colspan="2" class="bg-wiki-infoboxHeader/70 text-wiki-text font-semibold py-1 px-2.5 text-center">
+                    Clasificación histórica
+                  </th>
+                </tr>
+                <tr>
+                  <td colspan="2" class="py-2 px-2.5 text-center text-[11px] leading-relaxed">
+                    Olvido • Picaresca • Megalomanía Decimonónica • Eurocentrismo 
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </aside>
+
+          <!-- PÁRRAFOS INTRODUCTORIOS (LEAD SECTION) -->
+          <div class="editable-block space-y-3.5">
+            <p>
+              Los dos principales promotores políticos de la Regeneración política de finales del siglo, <strong>Rafael Núñez </strong> y <strong>Miguel Antonio Caro</strong>, no se consideraban a sí mismos políticos, sino poetas. “Soy poeta hasta la médula”, escribía Núñez en una de las pausas de su incesante actividad política. Y como poetas ganaron fama los dos antes que en la política, en la cual ambos llegarían a la presidencia de la República. Núñez como el autor de abstrusos poemas filosóficos colmados de signos de interrogación y de exclamación:
+            </p>
+            <p style="padding-left: 5%;">
+             ¡Oh confusión! ¡Oh caos! ¡Quién pudiera <br>
+              del sol de la verdad la lumbre austera <br>
+              y pura en este limbo hacer brillar! <br>
+              De lo cierto y lo incierto ¿quién un día, <br>
+              y del bien y del mal, conseguiría <br>
+               los límites fijar? <br>
+            </p>
+            <p>
+             Y de versos de pasión amorosa casi escandalosos para la pacata sociedad de la época:
+            </p>
+
+            <p>
+             Y de versos de pasión amorosa casi escandalosos para la pacata sociedad de la época:
+            </p>
+
+            <p style="padding-left: 5%;">
+            Mis labios a los tuyos se juntaron;<br>
+            tu aliento con mi aliento se juntó...
+            </p>
+
+            <p>
+
+              Y Caro como traductor de poetas latinos y autor de odas y sonetos patrióticos —a la estatua de Bolívar, a la Patria—: 
+            </p>
+
+            <p  style="padding-left: 5%;">
+            Patria: te adoro en mi silencio mudo
+            y temo profanar tu nombre santo:
+            por ti he gozado y padecido tanto
+            como lengua mortal decir no pudo...
+            </p>
+
+
+            <p>Y a Núñez hay que reprocharle nada menos que el Himno Nacional de Colombia, con estrofas tan incomprensibles como:</p>
+
+                      <p style="padding-left: 7%;">La patria así se forma, termópilas brotando,<br>
+                      constelación de cíclopes su noche iluminó;<br>
+                      la flor estremecida, mortal el viento hallando,<br>
+                      debajo los laureles seguridad buscó...</p>
+
+                <p>O tan cursis como la de la virgen que ve morir a su novio en la batalla, pero no le importa:</p>
+
+                      <p style="padding-left: 7%;">La virgen sus cabellos desgarra en agonía<br>
+                      y de su amor viüda los cuelga de un ciprés;<br>
+                      lamenta su esperanza que cubre losa fría,<br>
+                      pero glorioso orgullo circunda su alba tez...</p>
+
+                <p >Era un poema de juventud, de acuerdo, y de circunstancias. Pero de él se sentía Núñez tan satisfecho en su triunfal madurez, que cuando le pusieron música y lo estrenaron en Cartagena en 1887 hizo repetir el estreno en Bogotá en el palacio de San Carlos, anunciándolo oficialmente como Himno Nacional.</p>
+
+
+          </div>
+
+          <!-- ÍNDICE DE CONTENIDOS MÓVIL / TABLET (Visible cuando el lateral izquierdo está oculto) -->
+          <div class="lg:hidden my-5 p-3.5 bg-wiki-surface border border-wiki-borderDark rounded-sm text-xs max-w-md">
+            <div class="flex items-center justify-between font-bold text-wiki-text mb-2">
+              <span>Índice</span>
+              <button onclick="toggleMobileToc()" id="mobile-toc-btn" class="text-wiki-link hover:underline font-normal">[ocultar]</button>
+            </div>
+            <ul id="mobile-toc-list" class="space-y-1 text-wiki-link">
+              <li><a href="#sec-origenes" class="hover:underline">1. Orígenes </a></li>
+              <li class="pl-4"><a href="#sec-abaco" class="hover:underline">1.1 El ábaco y la pascalina</a></li>
+              <li class="pl-4"><a href="#sec-babbage" class="hover:underline">1.2 Máquina analítica</a></li>
+              <li><a href="#sec-pioneros" class="hover:underline">2. Fundamentos teóricos</a></li>
+              <li><a href="#sec-generaciones" class="hover:underline">3. Generaciones electrónicas</a></li>
+              <li><a href="#sec-moderna" class="hover:underline">4. Revolución personal y red</a></li>
+              <li><a href="#sec-vease" class="hover:underline">5. Véase también</a></li>
+              <li><a href="#sec-referencias" class="hover:underline">6. Referencias</a></li>
+            </ul>
+          </div>
+
+          <!-- =============================================================
+               SECCIÓN 1
+               ============================================================= -->
+          <section id="sec-origenes" class="mt-7 scroll-mt-16">
+            <h2 class="font-serif text-xl sm:text-[22px] font-normal text-wiki-text border-b border-wiki-borderDark pb-0.5 mb-3 flex items-baseline justify-between">
+              <span>Núñez y Caro</span>
+              <span class="font-sans text-xs text-wiki-muted font-normal">[<button onclick="toggleEditMode()" class="text-wiki-link hover:underline">editar</button>]</span>
+            </h2>
+
+            <div class="editable-block space-y-3">
+              <p>
+                Pero lo más llamativo no es que los políticos profesionales quisieran ser poetas: esa es una vieja tradición colombiana. Sino que los poetas, por su parte, lo que en realidad querían era ser políticos profesionales. Lo vemos en el caso del más grande de la época, el lírico José Asunción Silva, el del delicado “Nocturno”:
+              </p>
+
+                <p style="padding-left: 7%;">
+                ...Y tu sombra esbelta y ágil, <br>
+                 y tu sombra fina y lánguida <br>
+                 como en esa noche tibia de la muerta primavera, <br>
+                 como en esa noche llena de perfumes, de <br>
+                  murmullos y de músicas de alas... <br>
+
+                </p>
+
+              <h3 id="sec-abaco" class="font-sans text-base sm:text-[17px] font-bold text-wiki-text mt-4 mb-1.5 scroll-mt-16">
+                  Las ambiciones de los poetas de por aquel entonces
+              </h3>
+              <p>
+                Pues en su novela póstuma, <strong>De sobremesa</strong>, el mismísimo Silva revela su ambición secreta a través del diario íntimo de su alter ego José Fernández, un dandi multimillonario que escribe atormentados versos románticos: su sueño consiste en dejar a un lado la lira de poeta para llegar a la presidencia de la República. O bien por las buenas, dice, o bien para:
+              </p>
+
+                <p style="padding-left: 7%;">
+                (...) tras una guerra en que sucumban unos cuantos miles de indios infelices asaltar el poder, espada en mano, y fundar una tiranía (...) una dictadura con su nueva Constitución suficientemente elástica para que permita prevenir las revueltas de forma republicana por supuesto, que son los nombres lo que les importa a los pueblos, con sus periodistas de la oposición presos cada quince días, sus destierros de los jefes contrarios, sus confiscaciones de los bienes enemigos y sus sesiones tempestuosas de las Cámaras disueltas a bayonetazos: todo el juego.
+
+              </p>
+
+              <p>
+
+                Es decir, para repetir la trayectoria de Rafael Núñez punto por punto: los poemas románticos, la presidencia “por las buenas” del año 80, y luego la guerra civil del 85 y la imposición del régimen autoritario de la Regeneración. Y después, prosigue Silva, “desprendido del poder que quedará en manos seguras” (las de un Holguín, las de un Caro), “retirado en una casa de campo rodeada de jardines y de bosques de palmas desde donde se divise en lontananza el azul del mar y no lejos la cúpula de una antigua capilla (...) escribiré singulares estrofas envueltas en brumas de misticismo y pobladas de visiones apocalípticas que...”. Etcétera.
+
+              </p>
+
+            </div>
+          </section>
+
+          <!-- =============================================================
+               SECCIÓN 2
+               ============================================================= -->
+          <section id="sec-pioneros" class="mt-7 scroll-mt-16">
+            <h2 class="font-serif text-xl sm:text-[22px] font-normal text-wiki-text border-b border-wiki-borderDark pb-0.5 mb-3 flex items-baseline justify-between">
+              <span><h1> Himno Nacional de la República de <a href="pixels.html">Colombia</a>  </h1>
+</span>
+              <span class="font-sans text-xs text-wiki-muted font-normal">[<button onclick="toggleEditMode()" class="text-wiki-link hover:underline">editar</button>]</span>
+            </h2>
+
+            <div class="editable-block space-y-3">
+              
+
+              
+
+              <p> Sóbeme y verá que no hay piedra que la erosión no muerda </p>  
+              <p> Ni mal himno que canten por más de mil años, ni pueblo que lo soporte </p>
+                
+              <br>
+
+                  </div>
+
+                  <div class="contenedor" id="texto-contenedor"></div>
+                  <div id="estado">Haz clic repetidamente sobre una palabra para borrarla.</div>
+
+
+
+
+
+            </div>
+          </section>
+
+          <!-- =============================================================
+               SECCIÓN 3
+               ============================================================= -->
+          <section id="sec-generaciones" class="mt-7 scroll-mt-16">
+            <h2 class="font-serif text-xl sm:text-[22px] font-normal text-wiki-text border-b border-wiki-borderDark pb-0.5 mb-3 flex items-baseline justify-between">
+              <span>¿Para qué seguir?</span>
+              <span class="font-sans text-xs text-wiki-muted font-normal">[<button onclick="toggleEditMode()" class="text-wiki-link hover:underline">editar</button>]</span>
+            </h2>
+
+            <div class="editable-block space-y-3">
+              <h3 id="sec-primera-gen" class="font-sans text-base sm:text-[17px] font-bold text-wiki-text mt-3 mb-1.5 scroll-mt-16">
+                Indalecio Arevalo Aguirre
+              </h3>
+              <p>
+                ¿Para qué seguir? Parece el historiador <strong>Indalecio Liévano</strong> escribiendo la biografía de Núñez, de la cual tomo una cita del poeta Rubén Darío para describir al estadista cartagenero en su retiro de El Cabrero: “Es tan modesto como precioso. En la linda península está la casa blanca. Cerca de la casa, la ermita de techos rojos. Y tras las palmas verdes del cocotal cercano —vasto, bello, azul— el mar”.
+              </p>
+
+              <p>
+               De ahí en adelante la historia siguió más bien en prosa. Hasta cerrar el siglo con la terrible guerra civil de los Mil Días y la desastrosa separación de Panamá bajo el gobierno de un poeta festivo, José Manuel Marroquín: el de los versitos de tema ortográfico:
+              </p>
+
+              <p style="padding-left: 7%;">
+
+                 Con ve van aluvión, mover, aleve <br>
+                  desvanecer, agravio y atavío, <br>
+                  maravedí, desvencijar, relieve, <br>
+                  aseverar, averno, desvarío... <br>
+              </p>
+
+
+
+              <!-- Tabla comparativa estilo Wikitable -->
+            
+          </section>
+
+          <!-- =============================================================
+               SECCIÓN 4
+               ============================================================= -->
+          
+
+          <!-- =============================================================
+               SECCIÓN 5: VÉASE TAMBIÉN
+               ============================================================= -->
+         
+
+          <!-- =============================================================
+               SECCIÓN 6: REFERENCIAS (Citas numeradas con retorno ^)
+               ============================================================= -->
+          <section id="sec-referencias" class="mt-7 scroll-mt-16">
+            <h2 class="font-serif text-xl sm:text-[22px] font-normal text-wiki-text border-b border-wiki-borderDark pb-0.5 mb-3">
+              Referencias
+            </h2>
+            <ol class="list-decimal pl-6 space-y-1.5 text-xs sm:text-[13px] text-wiki-text leading-relaxed">
+              <li id="cite_note-1" class="scroll-mt-20">
+                <a href="#cite_ref-1" class="text-wiki-link hover:underline font-bold mr-1" title="Volver al texto">↑</a>
+                Ceruzzi, Paul E. (2003). <em>A History of Modern Computing</em> (2.ª edición). Cambridge, Massachusetts: MIT Press. ISBN 978-0-262-53203-7.
+              </li>
+              <li id="cite_note-2" class="scroll-mt-20">
+                <a href="#cite_ref-2" class="text-wiki-link hover:underline font-bold mr-1" title="Volver al texto">↑</a>
+                Swade, Doron (2001). <em>The Difference Engine: Charles Babbage and the Quest to Build the First Computer</em>. Viking Press. ISBN 978-0-670-91020-5.
+              </li>
+              <li id="cite_note-3" class="scroll-mt-20">
+                <a href="#cite_ref-3" class="text-wiki-link hover:underline font-bold mr-1" title="Volver al texto">↑</a>
+                Ifrah, Georges (2000). <em>The Universal History of Computing: From the Abacus to the Quantum Computer</em>. John Wiley &amp; Sons.
+              </li>
+              <li id="cite_note-4" class="scroll-mt-20">
+                <a href="#cite_ref-4" class="text-wiki-link hover:underline font-bold mr-1" title="Volver al texto">↑</a>
+                Turing, Alan M. (1936). «On Computable Numbers, with an Application to the Entscheidungsproblem». <em>Proceedings of the London Mathematical Society</em>, Series 2, vol. 42, pp. 230-265.
+              </li>
+              <li id="cite_note-5" class="scroll-mt-20">
+                <a href="#cite_ref-5" class="text-wiki-link hover:underline font-bold mr-1" title="Volver al texto">↑</a>
+                von Neumann, John (1945). <em>First Draft of a Report on the EDVAC</em>. Moore School of Electrical Engineering, University of Pennsylvania.
+              </li>
+              <li id="cite_note-6" class="scroll-mt-20">
+                <a href="#cite_ref-6" class="text-wiki-link hover:underline font-bold mr-1" title="Volver al texto">↑</a>
+                Isaacson, Walter (2014). <em>The Innovators: How a Group of Hackers, Geniuses, and Geeks Created the Digital Revolution</em>. Simon &amp; Schuster.
+              </li>
+            </ol>
+          </section>
+
+          <!-- Caja de Categorías al final del artículo -->
+          <div class="mt-8 px-3 py-2 bg-wiki-surface border border-wiki-borderDark rounded-sm text-xs flex flex-wrap items-center gap-2">
+            <a href="#top" class="text-wiki-link hover:underline font-medium">Categorías</a>:
+            <a href="#top" class="text-wiki-link hover:underline">Historia de la informática</a>
+            <span class="text-wiki-muted">|</span>
+            <a href="#top" class="text-wiki-link hover:underline">Historia de la tecnología</a>
+            <span class="text-wiki-muted">|</span>
+            <a href="#top" class="text-wiki-link hover:underline">Ciencias de la computación</a>
+          </div>
+        </div>
+
+        <!-- VISTA 2: DISCUSIÓN (Simulada) -->
+        <div id="view-talk" class="hidden py-4 text-sm space-y-4">
+          <div class="p-4 bg-wiki-surface border border-wiki-borderDark rounded-sm">
+            <h3 class="font-bold text-base mb-1">Página de discusión: Historia de la computación</h3>
+            <p class="text-xs text-wiki-muted">Este es el espacio donde los editores coordinan mejoras al artículo enciclopédico.</p>
+          </div>
+          <div class="border-l-2 border-wiki-link pl-4 py-1 space-y-2">
+            <h4 class="font-bold text-wiki-text">Propuesta de ampliación sobre computación en América Latina</h4>
+            <p class="text-wiki-text">Sería recomendable añadir una subsección sobre la llegada de los primeros mainframes a universidades latinoamericanas en la década de 1960 (como Clementina en la UBA). — <span class="text-xs text-wiki-muted">Usuario:EditorHistórico 14:22 25 nov 2026 (UTC)</span></p>
+          </div>
+          <button onclick="switchViewTab('article')" class="px-3 py-1.5 text-xs font-semibold bg-wiki-link text-white rounded hover:bg-wiki-linkHover">
+            ← Volver al artículo
+          </button>
+        </div>
+
+        <!-- VISTA 3: HISTORIAL (Simulado) -->
+        <div id="view-history" class="hidden py-4 text-xs space-y-3">
+          <div class="p-3 bg-wiki-surface border border-wiki-borderDark rounded-sm">
+            <h3 class="font-bold text-sm text-wiki-text">Historial de revisiones de «Historia de la computación»</h3>
+            <p class="text-wiki-muted mt-0.5">Mostrando las últimas ediciones registradas en esta plantilla.</p>
+          </div>
+          <ul class="divide-y divide-wiki-border border border-wiki-border rounded-sm">
+            <li class="p-2.5 flex flex-wrap justify-between gap-2 bg-white">
+              <span><strong>(act | ant)</strong> 18:05 25 nov 2026 ‎<span class="text-wiki-link">PlantillaBot</span> ‎(Plantilla HTML Vector 2022 inicializada con estructura responsiva)</span>
+              <span class="text-emerald-700 font-semibold">(+24 850 bytes)</span>
+            </li>
+            <li class="p-2.5 flex flex-wrap justify-between gap-2 bg-wiki-surface/50">
+              <span><strong>(act | ant)</strong> 12:14 20 nov 2026 ‎<span class="text-wiki-link">BibliotecarioWiki</span> ‎(Añadidas referencias académicas y tabla de generaciones)</span>
+              <span class="text-emerald-700 font-semibold">(+3 120 bytes)</span>
+            </li>
+          </ul>
+          <button onclick="switchViewTab('article')" class="px-3 py-1.5 text-xs font-semibold bg-wiki-link text-white rounded hover:bg-wiki-linkHover">
+            ← Volver al artículo
+          </button>
+        </div>
+
+      </main>
+
+      <!-- =================================================================
+           COLUMNA DERECHA: PANEL DE APARIENCIA (Vector 2022)
+           ================================================================= -->
+      <aside id="appearance-panel" class="hidden lg:block lg:col-span-2 sticky top-16 text-xs">
+        <div class="pb-2 mb-3 border-b border-wiki-border flex items-center justify-between">
+          <span class="font-bold text-wiki-text">Apariencia</span>
+          <span class="text-[11px] text-wiki-muted">Vector 2022</span>
+        </div>
+
+        <!-- Control de Tamaño de Texto -->
+        <div class="mb-4">
+          <div class="text-wiki-muted font-medium pb-1 mb-1.5 border-b border-wiki-border">Texto</div>
+          <div class="space-y-1.5">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="radio" name="fontSize" value="small" onchange="setFontSize('small')" class="accent-wiki-link">
+              <span>Pequeño</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="radio" name="fontSize" value="standard" checked onchange="setFontSize('standard')" class="accent-wiki-link">
+              <span>Estándar</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="radio" name="fontSize" value="large" onchange="setFontSize('large')" class="accent-wiki-link">
+              <span>Grande</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Control de Ancho de Lectura -->
+        <div class="mb-4">
+          <div class="text-wiki-muted font-medium pb-1 mb-1.5 border-b border-wiki-border">Anchura</div>
+          <div class="space-y-1.5">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="radio" name="pageWidth" value="standard" checked onchange="setPageWidth('standard')" class="accent-wiki-link">
+              <span>Estándar</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="radio" name="pageWidth" value="wide" onchange="setPageWidth('wide')" class="accent-wiki-link">
+              <span>Ancho</span>
+            </label>
+          </div>
+        </div>
+      </aside>
+
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       PIE DE PÁGINA ESTILO WIKIMEDIA
+       ===================================================================== -->
+  <footer class="border-t border-wiki-border bg-wiki-surface/60 text-xs text-wiki-text">
+    <div class="max-w-[1560px] mx-auto px-4 sm:px-6 py-6 space-y-4">
+      <p class="leading-relaxed text-wiki-muted">
+        Esta página se editó por última vez el 25 nov 2026 a las 18:05.
+      </p>
+      <p class="leading-relaxed text-wiki-muted">
+        El texto está disponible bajo la <a href="#top" class="text-wiki-link hover:underline">Licencia Creative Commons Atribución-CompartirIgual 4.0</a>; pueden aplicarse cláusulas adicionales. Al usar este sitio aceptas nuestros <a href="#top" class="text-wiki-link hover:underline">términos de uso</a> y nuestra <a href="#top" class="text-wiki-link hover:underline">política de privacidad</a>. Wikipedia® es una marca registrada de la Fundación Wikimedia, una organización sin ánimo de lucro.
+      </p>
+
+      <div class="pt-2 flex flex-wrap items-center justify-between gap-4">
+        <ul class="flex flex-wrap gap-x-4 gap-y-1.5 text-wiki-link">
+          <li><a href="#top" class="hover:underline">Política de privacidad</a></li>
+          <li><a href="#top" class="hover:underline">Acerca de Wikipedia</a></li>
+          <li><a href="#top" class="hover:underline">Limitación de responsabilidad</a></li>
+          <li><a href="#top" class="hover:underline">Código de conducta</a></li>
+          <li><a href="#top" class="hover:underline">Desarrolladores</a></li>
+          <li><a href="#top" class="hover:underline">Estadísticas</a></li>
+          <li><a href="#top" class="hover:underline">Declaración de cookies</a></li>
+        </ul>
+
+        <!-- Insignias estilo Wikimedia -->
+        <div class="flex items-center gap-2">
+          <span class="px-2.5 py-1 border border-wiki-borderDark bg-white rounded-xs text-[11px] font-semibold text-wiki-muted select-none">
+            Wikimedia Foundation
+          </span>
+          <span class="px-2.5 py-1 border border-wiki-borderDark bg-white rounded-xs text-[11px] font-semibold text-wiki-muted select-none">
+            Powered by MediaWiki
+          </span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- =====================================================================
+       LÓGICA INTERACTIVA DE LA PLANTILLA
+       ===================================================================== -->
+  <script>
+    let isEditMode = false;
+
+    // Mostrar notificación estilo Wikipedia (sin alert)
+    function showToast(title, message) {
+      const toast = document.getElementById('wiki-toast');
+      document.getElementById('wiki-toast-title').textContent = title;
+      document.getElementById('wiki-toast-msg').textContent = message;
+      toast.classList.remove('hidden');
+      clearTimeout(window.toastTimeout);
+      window.toastTimeout = setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 4000);
+    }
+
+    function hideToast() {
+      document.getElementById('wiki-toast').classList.add('hidden');
+    }
+
+    // Alternar menú principal superior
+    function toggleMainMenu() {
+      const drawer = document.getElementById('main-nav-drawer');
+      drawer.classList.toggle('hidden');
+    }
+
+    // Alternar menú de idiomas
+    function toggleLangMenu() {
+      const dropdown = document.getElementById('lang-dropdown');
+      dropdown.classList.toggle('hidden');
+    }
+
+    // Alternar índice lateral de escritorio
+    function toggleDesktopToc() {
+      const list = document.getElementById('desktop-toc-list');
+      const btn = document.getElementById('toc-collapse-btn');
+      const isHidden = list.classList.toggle('hidden');
+      btn.textContent = isHidden ? 'mostrar' : 'ocultar';
+    }
+
+    // Alternar índice móvil
+    function toggleMobileToc() {
+      const list = document.getElementById('mobile-toc-list');
+      const btn = document.getElementById('mobile-toc-btn');
+      const isHidden = list.classList.toggle('hidden');
+      btn.textContent = isHidden ? '[mostrar]' : '[ocultar]';
+    }
+
+    // Alternar panel de apariencia en pantallas pequeñas/medianas
+    function toggleAppearancePanel() {
+      const panel = document.getElementById('appearance-panel');
+      if (window.innerWidth < 1024) {
+        panel.classList.toggle('hidden');
+        panel.classList.toggle('block');
+        panel.classList.add('p-4', 'bg-wiki-surface', 'border', 'border-wiki-borderDark', 'rounded', 'mb-4');
+      } else {
+        showToast('Panel de apariencia', 'Utiliza las opciones de Texto y Anchura en la columna derecha.');
+      }
+    }
+
+    // Cambiar pestañas: Artículo / Discusión / Historial
+    function switchViewTab(viewName) {
+      const views = ['article', 'talk', 'history'];
+      views.forEach(v => {
+        document.getElementById(`view-${v}`).classList.toggle('hidden', v !== viewName);
+      });
+
+      // Actualizar estilos activos de pestañas
+      const tabArticle = document.getElementById('tab-article');
+      const tabTalk = document.getElementById('tab-talk');
+      const tabRead = document.getElementById('tab-read');
+      const tabHistory = document.getElementById('tab-history');
+
+      [tabArticle, tabTalk, tabRead, tabHistory].forEach(t => {
+        t.classList.remove('border-wiki-text', 'font-semibold', 'text-wiki-text');
+        t.classList.add('border-transparent', 'text-wiki-link');
+      });
+
+      if (viewName === 'article') {
+        [tabArticle, tabRead].forEach(t => {
+          t.classList.add('border-wiki-text', 'font-semibold', 'text-wiki-text');
+          t.classList.remove('border-transparent', 'text-wiki-link');
+        });
+      } else if (viewName === 'talk') {
+        tabTalk.classList.add('border-wiki-text', 'font-semibold', 'text-wiki-text');
+        tabTalk.classList.remove('border-transparent', 'text-wiki-link');
+      } else if (viewName === 'history') {
+        tabHistory.classList.add('border-wiki-text', 'font-semibold', 'text-wiki-text');
+        tabHistory.classList.remove('border-transparent', 'text-wiki-link');
+      }
+    }
+
+    // Activar o desactivar edición visual directa en el artículo
+    function toggleEditMode() {
+      switchViewTab('article');
+      isEditMode = !isEditMode;
+      const badge = document.getElementById('edit-mode-badge');
+      const editTab = document.getElementById('tab-edit');
+      const titleEl = document.getElementById('article-title');
+      const editableBlocks = document.querySelectorAll('.editable-block');
+
+      if (isEditMode) {
+        badge.classList.remove('hidden');
+        editTab.textContent = 'Guardar cambios';
+        editTab.classList.add('font-semibold', 'text-emerald-700');
+        titleEl.setAttribute('contenteditable', 'true');
+        titleEl.classList.add('bg-wiki-blueBg/50', 'px-1', 'rounded');
+        editableBlocks.forEach(block => {
+          block.setAttribute('contenteditable', 'true');
+          block.classList.add('ring-1', 'ring-wiki-link/40', 'bg-wiki-blueBg/20', 'p-2', 'rounded');
+        });
+        showToast('Editor Visual activado', 'Puedes editar directamente el título y los párrafos de la plantilla.');
+      } else {
+        badge.classList.add('hidden');
+        editTab.textContent = 'Editar';
+        editTab.classList.remove('font-semibold', 'text-emerald-700');
+        titleEl.removeAttribute('contenteditable');
+        titleEl.classList.remove('bg-wiki-blueBg/50', 'px-1', 'rounded');
+        editableBlocks.forEach(block => {
+          block.removeAttribute('contenteditable');
+          block.classList.remove('ring-1', 'ring-wiki-link/40', 'bg-wiki-blueBg/20', 'p-2', 'rounded');
+        });
+        showToast('Cambios guardados', 'Tu edición local en la vista previa se ha aplicado correctamente.');
+      }
+    }
+
+    // Búsqueda interna dentro del artículo
+    function handleSearch(event) {
+      event.preventDefault();
+      const query = document.getElementById('wiki-search-input').value.trim().toLowerCase();
+      if (!query) return;
+
+      const sections = document.querySelectorAll('#view-article section, #view-article p');
+      let foundEl = null;
+
+      for (const el of sections) {
+        if (el.textContent.toLowerCase().includes(query)) {
+          foundEl = el;
+          break;
+        }
+      }
+
+      if (foundEl) {
+        switchViewTab('article');
+        foundEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        foundEl.classList.add('bg-amber-100', 'transition-colors');
+        setTimeout(() => foundEl.classList.remove('bg-amber-100'), 2200);
+        showToast('Resultado encontrado', `Saltando a la coincidencia para «${query}».`);
+      } else {
+        showToast('Sin resultados directos', `No se encontró «${query}» en este artículo de ejemplo.`);
+      }
+    }
+
+    // Cambiar tamaño de fuente desde el panel Apariencia
+    function setFontSize(size) {
+      const article = document.getElementById('view-article');
+      article.classList.remove('text-[13.5px]', 'text-[15px]', 'text-[17px]');
+      if (size === 'small') article.classList.add('text-[13.5px]');
+      if (size === 'standard') article.classList.add('text-[15px]');
+      if (size === 'large') article.classList.add('text-[17px]');
+    }
+
+    // Cambiar ancho de columna desde el panel Apariencia
+    function setPageWidth(width) {
+      const mainCol = document.getElementById('article-content');
+      const appearanceCol = document.getElementById('appearance-panel');
+      if (width === 'wide') {
+        mainCol.classList.remove('lg:col-span-8');
+        mainCol.classList.add('lg:col-span-9');
+        appearanceCol.classList.remove('lg:col-span-2');
+        appearanceCol.classList.add('lg:col-span-1');
+      } else {
+        mainCol.classList.remove('lg:col-span-9');
+        mainCol.classList.add('lg:col-span-8');
+        appearanceCol.classList.remove('lg:col-span-1');
+        appearanceCol.classList.add('lg:col-span-2');
+      }
+    }
+
+    // Copiar cita bibliográfica usando execCommand (compatible con iframes)
+    function copyArticleCitation() {
+      const title = document.getElementById('article-title').textContent.trim();
+      const citation = `Colaboradores de Wikipedia. (2026). ${title}. En Wikipedia, la enciclopedia libre.`;
+      const tempInput = document.createElement('textarea');
+      tempInput.value = citation;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand('copy');
+      document.body.removeChild(tempInput);
+      showToast('Cita copiada', citation);
+    }
+
+    // Resaltar sección activa en el índice lateral al hacer scroll
+    window.addEventListener('scroll', () => {
+      const sectionIds = ['sec-origenes', 'sec-pioneros', 'sec-generaciones', 'sec-moderna', 'sec-vease', 'sec-referencias'];
+      let currentId = '';
+      for (const id of sectionIds) {
+        const el = document.getElementById(id);
+        if (el && el.getBoundingClientRect().top <= 120) {
+          currentId = id;
+        }
+      }
+      document.querySelectorAll('.toc-link').forEach(link => {
+        if (currentId && link.getAttribute('href') === `#${currentId}`) {
+          link.classList.add('font-bold', 'text-wiki-text');
+        } else {
+          link.classList.remove('font-bold', 'text-wiki-text');
+        }
+      });
+    });
+  </script>
+
+
+
+ <!-- script himno-->
+
+ <script>
+    // ==========================================
+    // CONFIGURACIÓN PRINCIPAL (MODIFICA AQUÍ)
+    // ==========================================
+    function numeroAleatorio(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+    const entre1y10 = numeroAleatorio(18, 30 ); // 1 a 10
+
+
+
+    const CLICS_PARA_BORRAR = entre1y10; // Cantidad de clics necesarios para desvanecer la palabra
+    const SHEETY_URL = "https://api.sheety.co/e747b19c10a06a356a61015e63a8ed11/himno/hoja1"; // Tu endpoint de Sheety
+    const NOMBRE_COLUMNA_SHEETY = "texto"; // Nombre de la columna en tu Google Sheet (en minúsculas)
+    const ID_FILA_SHEETY = 2; // Número de fila en Google Sheets a actualizar (usualmente empieza en 2)
+
+    // Texto inicial (se sobrescribirá si Sheety responde correctamente)
+    let textoActual = "La creatividad consiste en transformar las palabras originales en nuevas ideas.";
+
+    const contenedor = document.getElementById("texto-contenedor");
+    const estadoDiv = document.getElementById("estado");
+
+    // 1. Cargar texto desde Sheety al iniciar
+    async function cargarTextoDesdeSheety() {
+      if (SHEETY_URL.includes("TU_ID_DE_PROYECTO")) {
+        renderizarTexto(textoActual);
+        return;
+      }
+
+      try {
+        estadoDiv.textContent = "Cargando texto...";
+        const respuesta = await fetch(SHEETY_URL);
+        const datos = await respuesta.json();
+        
+        // Sheety devuelve el nombre de la hoja en plural como clave principal
+        const claveHoja = Object.keys(datos)[0];
+        if (datos[claveHoja] && datos[claveHoja].length > 0) {
+          textoActual = datos[claveHoja][0][NOMBRE_COLUMNA_SHEETY] || textoActual;
+        }
+        estadoDiv.textContent = "Listo. Haz clic varias veces en cualquier palabra.";
+      } catch (error) {
+        console.error("Error al cargar de Sheety:", error);
+        estadoDiv.textContent = "Usando texto local (configura tu URL de Sheety).";
+      }
+      renderizarTexto(textoActual);
+    }
+
+    // 2. Guardar el nuevo texto en Sheety (Método PUT para actualizar fila)
+    async function guardarTextoEnSheety(nuevoTexto) {
+      if (SHEETY_URL.includes("TU_ID_DE_PROYECTO")) {
+        console.log("Texto actualizado localmente:", nuevoTexto);
+        estadoDiv.textContent = "Guardado localmente (falta configurar URL de Sheety).";
+        return;
+      }
+
+      try {
+        estadoDiv.textContent = "Guardando cambios en Sheety...";
+        // Extraer el nombre singular de la hoja desde la URL para el cuerpo JSON
+        const partesUrl = SHEETY_URL.split("/");
+        const nombreHojaSingular = partesUrl[partesUrl.length - 1].replace(/s$/, ""); 
+
+        const body = {
+          [nombreHojaSingular]: {
+            [NOMBRE_COLUMNA_SHEETY]: nuevoTexto
+          }
+        };
+
+        const respuesta = await fetch(`${SHEETY_URL}/${ID_FILA_SHEETY}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(body)
+        });
+
+        if (respuesta.ok) {
+          estadoDiv.textContent = "¡Guardado en Google Sheets!";
+        } else {
+          throw new Error("Error en la respuesta de Sheety");
+        }
+      } catch (error) {
+        console.error("Error al guardar:", error);
+        estadoDiv.textContent = "Error al guardar en Sheety. Revisa la consola.";
+      }
+    }
+
+    // 3. Renderizar el texto dividiendo palabras y espacios
+    function renderizarTexto(texto) {
+      contenedor.innerHTML = "";
+      // Divide manteniendo espacios y signos de puntuación separados
+      const tokens = texto.split(/(\s+|[.,;!?¿¡]+)/);
+
+      tokens.forEach((token, index) => {
+        // Si es espacio o signo de puntuación, lo insertamos como texto plano
+        if (/^\s+$/.test(token) || /^[.,;!?¿¡]+$/.test(token) || token === "") {
+          contenedor.appendChild(document.createTextNode(token));
+          return;
+        }
+
+        const span = document.createElement("span");
+        span.className = "palabra";
+        span.textContent = token;
+        span.dataset.clics = 0;
+
+        span.addEventListener("click", () => manejarClicPalabra(span, tokens, index));
+        contenedor.appendChild(span);
+      });
+    }
+
+    // 4. Lógica de desvanecimiento por clics
+    function manejarClicPalabra(span, tokens, index) {
+      let clics = parseInt(span.dataset.clics) + 1;
+      span.dataset.clics = clics;
+
+      // Calcula la opacidad restante proporcionalmente
+      const nuevaOpacidad = Math.max(0, 1 - (clics / CLICS_PARA_BORRAR));
+      span.style.opacity = nuevaOpacidad;
+
+      // Si alcanzó el límite de clics, habilita la edición
+      if (clics >= CLICS_PARA_BORRAR) {
+        habilitarEdicion(span, tokens, index);
+      }
+    }
+
+    // 5. Reemplazar el span por un input con longitud exacta
+    function habilitarEdicion(span, tokens, index) {
+      const palabraOriginal = tokens[index];
+      const longitudExacta = palabraOriginal.length;
+
+      const input = document.createElement("input");
+      input.type = "text";
+      input.className = "input-reemplazo";
+      input.maxLength = longitudExacta;
+      input.placeholder = "_".repeat(longitudExacta);
+      // Ajusta el ancho visual aproximado al de la palabra original
+      input.style.width = `${longitudExacta + 1}ch`;
+
+      span.replaceWith(input);
+      input.focus();
+
+      estadoDiv.textContent = `Escribe una palabra de exactamente ${longitudExacta} caracteres y presiona Enter.`;
+
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          const nuevaPalabra = input.value.trim();
+
+          if (nuevaPalabra.length !== longitudExacta) {
+            estadoDiv.textContent = `⚠️ Debe tener exactamente ${longitudExacta} caracteres (llevas ${nuevaPalabra.length}).`;
+            return;
+          }
+
+          // Actualiza el array de tokens, reconstruye el texto y guarda
+          tokens[index] = nuevaPalabra;
+          textoActual = tokens.join("");
+          renderizarTexto(textoActual);
+          guardarTextoEnSheety(textoActual);
+        }
+      });
+    }
+
+    // Iniciar aplicación
+    cargarTextoDesdeSheety();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
